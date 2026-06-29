@@ -521,7 +521,13 @@ function initSupabase(url, key) {
 
 async function init() {
   supabase = initSupabase(SB_URL, SB_KEY);
-  if (!supabase) { setSyncStatus(false, 'Erro Supabase'); return; }
+  if (!supabase) {
+    setSyncStatus(false, 'Erro Supabase — verifique a chave');
+    // Ainda carrega jogos mesmo sem Supabase
+    await loadMatches();
+    renderMatches();
+    return;
+  }
 
   await Promise.all([loadMatches(), loadAllPalpites()]);
   renderAll();
@@ -538,31 +544,59 @@ async function init() {
 // FOOTBALL DATA API
 // ============================================================
 async function loadMatches() {
-  try {
-    // Busca jogos dos últimos 2 dias + próximos 3
-    const today = new Date();
-    const from = new Date(today); from.setDate(from.getDate() - 2);
-    const to = new Date(today); to.setDate(to.getDate() + 3);
+  const today = new Date();
+  const from = new Date(today); from.setDate(from.getDate() - 3);
+  const to = new Date(today); to.setDate(to.getDate() + 4);
+  const fmt = d => d.toISOString().split('T')[0];
+  const targetUrl = `https://api.football-data.org/v4/competitions/${COMPETITION_ID}/matches?dateFrom=${fmt(from)}&dateTo=${fmt(to)}`;
 
-    const fmt = d => d.toISOString().split('T')[0];
-    const url = `https://api.football-data.org/v4/competitions/${COMPETITION_ID}/matches?dateFrom=${fmt(from)}&dateTo=${fmt(to)}`;
+  // Proxies CORS para contornar bloqueio do browser
+  const proxies = [
+    url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+    url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+    url => `https://thingproxy.freeboard.io/fetch/${url}`,
+  ];
 
-    const res = await fetch(url, {
-      headers: { 'X-Auth-Token': fdApiKey }
+  async function tryFetch(proxyFn) {
+    const proxyUrl = proxyFn(targetUrl);
+    const res = await fetch(proxyUrl, {
+      headers: { 'X-Auth-Token': fdApiKey },
+      signal: AbortSignal.timeout(8000)
     });
-    if (!res.ok) throw new Error('API ' + res.status);
-    const data = await res.json();
-    allMatches = data.matches || [];
-    document.getElementById('statJogos').textContent = data.resultSet?.count || '64';
-    document.getElementById('statHoje').textContent = allMatches.filter(m => {
-      const md = new Date(m.utcDate).toDateString();
-      return md === new Date().toDateString();
-    }).length;
-  } catch(e) {
-    console.error('Matches error:', e);
-    allMatches = getMockMatches();
-    setSyncStatus(false, 'API indisponível (demo)');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const raw = await res.json();
+    // allorigins encapsula em .contents
+    const data = raw.contents ? JSON.parse(raw.contents) : raw;
+    if (!data.matches) throw new Error('Sem matches');
+    return data;
   }
+
+  // Tentar direto primeiro (funciona se a API liberar CORS), depois proxies
+  const attempts = [
+    () => fetch(targetUrl, { headers: { 'X-Auth-Token': fdApiKey }, signal: AbortSignal.timeout(6000) })
+            .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+            .then(d => { if (!d.matches) throw new Error('sem matches'); return d; }),
+    ...proxies.map(p => () => tryFetch(p))
+  ];
+
+  for (const attempt of attempts) {
+    try {
+      const data = await attempt();
+      allMatches = data.matches || [];
+      document.getElementById('statJogos').textContent = data.resultSet?.count || '64';
+      document.getElementById('statHoje').textContent = allMatches.filter(m => {
+        return new Date(m.utcDate).toDateString() === new Date().toDateString();
+      }).length;
+      return;
+    } catch(e) {
+      console.warn('Tentativa falhou:', e.message);
+    }
+  }
+
+  // Todos falharam — usar mock
+  console.error('Todas as tentativas de API falharam');
+  allMatches = getMockMatches();
+  setSyncStatus(false, 'API indisponível — exibindo demo');
 }
 
 // ============================================================
@@ -574,7 +608,15 @@ async function loadAllPalpites() {
     const { data, error } = await supabase
       .from('palpites')
       .select('*');
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase erro:', error.message);
+      if (error.message.includes('does not exist') || error.code === '42P01') {
+        showToast('⚠️ Tabela "palpites" não criada no Supabase ainda.', 'error');
+      } else {
+        showToast('Erro Supabase: ' + error.message, 'error');
+      }
+      return;
+    }
     allPalpites = data || [];
     document.getElementById('statPalpites').textContent = allPalpites.length;
   } catch(e) {
