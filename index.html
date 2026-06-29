@@ -290,38 +290,54 @@ function loadMatches() {
   var fmt   = function(d) { return d.toISOString().split('T')[0]; };
   var apiUrl = 'https://api.football-data.org/v4/competitions/' + COMP_ID + '/matches?dateFrom=' + fmt(from) + '&dateTo=' + fmt(to);
 
-  var attempts = [
-    function() {
-      return fetch(apiUrl, { headers: { 'X-Auth-Token': FD_KEY }, signal: AbortSignal.timeout(6000) })
-        .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); });
-    },
-    function() {
-      return fetch('https://corsproxy.io/?' + encodeURIComponent(apiUrl), { signal: AbortSignal.timeout(8000) })
-        .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); });
-    },
-    function() {
-      return fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(apiUrl), { signal: AbortSignal.timeout(8000) })
-        .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); })
-        .then(function(d) { return JSON.parse(d.contents); });
-    }
+  // Proxies CORS em ordem de prioridade
+  var proxies = [
+    apiUrl, // direto primeiro
+    'https://corsproxy.io/?' + encodeURIComponent(apiUrl),
+    'https://api.allorigins.win/get?url=' + encodeURIComponent(apiUrl),
+    'https://cors-anywhere.herokuapp.com/' + apiUrl,
+    'https://proxy.cors.sh/' + apiUrl,
   ];
 
-  function tryNext(i) {
-    if (i >= attempts.length) {
+  function parseResponse(url, data) {
+    // allorigins encapsula em .contents
+    if (data && data.contents) return JSON.parse(data.contents);
+    return data;
+  }
+
+  function tryProxy(i) {
+    if (i >= proxies.length) {
+      console.error('Todos os proxies falharam');
       allMatches = getMockMatches();
       setSyncStatus(false, 'API indisponível — modo demo');
       return Promise.resolve();
     }
-    return attempts[i]().then(function(data) {
-      allMatches = data.matches || [];
-      document.getElementById('statJogos').textContent = (data.resultSet && data.resultSet.count) || '64';
-    }).catch(function(e) {
-      console.warn('Tentativa ' + i + ' falhou:', e.message);
-      return tryNext(i + 1);
-    });
+    var url = proxies[i];
+    var headers = { 'X-Auth-Token': FD_KEY };
+    // cors-anywhere e proxy.cors.sh precisam de header diferente
+    if (url.indexOf('cors-anywhere') !== -1 || url.indexOf('proxy.cors.sh') !== -1) {
+      headers['x-requested-with'] = 'XMLHttpRequest';
+    }
+    return fetch(url, { headers: headers, signal: AbortSignal.timeout(10000) })
+      .then(function(r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status + ' proxy=' + i);
+        return r.json();
+      })
+      .then(function(raw) {
+        var data = parseResponse(url, raw);
+        if (!data || !data.matches) throw new Error('Sem matches proxy=' + i);
+        allMatches = data.matches;
+        var total = (data.resultSet && data.resultSet.count) || allMatches.length || '64';
+        document.getElementById('statJogos').textContent = total;
+        console.log('API OK via proxy ' + i + ', ' + allMatches.length + ' jogos');
+      })
+      .catch(function(e) {
+        console.warn('Proxy ' + i + ' falhou:', e.message);
+        return tryProxy(i + 1);
+      });
   }
 
-  return tryNext(0);
+  return tryProxy(0);
 }
 
 // ============================================================
