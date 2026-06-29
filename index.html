@@ -285,8 +285,8 @@ function initApp() {
 // ============================================================
 function loadMatches() {
   var today = new Date();
-  var from  = new Date(today); from.setDate(from.getDate() - 2);
-  var to    = new Date(today); to.setDate(to.getDate() + 7);
+  var from  = new Date(today); from.setDate(from.getDate() + 0);
+  var to    = new Date(today); to.setDate(to.getDate() + 1);
   var fmt   = function(d) { return d.toISOString().split('T')[0]; };
   var apiUrl = 'https://api.football-data.org/v4/competitions/' + COMP_ID + '/matches?dateFrom=' + fmt(from) + '&dateTo=' + fmt(to);
 
@@ -436,12 +436,20 @@ function renderMatches() {
   if (!allMatches.length) { c.innerHTML = '<div class="empty"><div class="emoji">⚽</div>Nenhum jogo encontrado.</div>'; return; }
 
   // Mostra apenas jogos não encerrados (agendados, ao vivo, pausados)
+  var agora   = new Date();
+  var hojeStr = agora.toISOString().split('T')[0];
+  var amanha  = new Date(agora); amanha.setDate(amanha.getDate() + 1);
+  var amanhaStr = amanha.toISOString().split('T')[0];
+
   var matchesVisiveis = allMatches.filter(function(m) {
-    return m.status === 'SCHEDULED' || m.status === 'IN_PLAY' || m.status === 'PAUSED' || m.status === 'TIMED';
+    var dJogo = m.utcDate.split('T')[0];
+    var ehHojeOuAmanha = dJogo === hojeStr || dJogo === amanhaStr;
+    var pendente = m.status === 'SCHEDULED' || m.status === 'IN_PLAY' || m.status === 'PAUSED' || m.status === 'TIMED';
+    return ehHojeOuAmanha && pendente;
   });
 
   if (!matchesVisiveis.length) {
-    c.innerHTML = '<div class="empty"><div class="emoji">⚽</div>Sem jogos agendados nos próximos dias.</div>';
+    c.innerHTML = '<div class="empty"><div class="emoji">⚽</div>Nenhum jogo hoje ou amanhã. Aguarde a próxima rodada!</div>';
     return;
   }
 
@@ -606,6 +614,27 @@ function showToast(msg, type) {
 
 function flagEmoji(tla) {
   if (!tla) return '🏳️';
+  // Normalizar: alguns times vêm com código ISO-2 (DE, JP, BR) em vez de TLA (GER, JPN, BRA)
+  var iso2map = {
+    'DE':'GER','JP':'JPN','BR':'BRA','AR':'ARG','FR':'FRA','ES':'ESP','PT':'POR',
+    'IT':'ITA','UY':'URU','CO':'COL','MX':'MEX','US':'USA','CA':'CAN','KR':'KOR',
+    'AU':'AUS','NL':'NED','BE':'BEL','HR':'CRO','SN':'SEN','MA':'MAR','GH':'GHA',
+    'NG':'NGA','EC':'ECU','CH':'SUI','PL':'POL','DK':'DEN','RS':'SRB','HU':'HUN',
+    'RO':'ROU','UA':'UKR','TR':'TUR','GR':'GRE','PA':'PAN','VE':'VEN','PE':'PER',
+    'CL':'CHI','BO':'BOL','PY':'PAR','IR':'IRI','SA':'SAU','QA':'QAT','EG':'EGY',
+    'DZ':'ALG','TN':'TUN','CM':'CMR','NZ':'NZL','CN':'CHN','HN':'HON','SV':'SLV',
+    'GT':'GUA','HT':'HAI','JM':'JAM','TT':'TRI','FI':'FIN','NO':'NOR','SE':'SWE',
+    'IS':'ISL','IE':'IRL','RU':'RUS','GE':'GEO','AM':'ARM','AZ':'AZE','IN':'IND',
+    'TH':'THA','VN':'VNM','ID':'IDN','PH':'PHI','KW':'KWT','OM':'OMA','BH':'BHR',
+    'JO':'JOR','YE':'YEM','IQ':'IRQ','LB':'LBN','SY':'SYR','PK':'PAK','BD':'BGD',
+    'CI':'CIV','GA':'GAB','AO':'ANG','MZ':'MOZ','ZW':'ZIM','ZM':'ZAM','UG':'UGA',
+    'KE':'KEN','ML':'MLI','GN':'GUI','SL':'SLE','BJ':'BEN','TG':'TOG',
+    'CR':'CRC','NI':'NCA','BZ':'BLZ','CU':'CUB','DO':'DOM',
+    'BA':'BIH','MK':'MKD','AL':'ALB','ME':'MNE','XK':'KOS',
+    'LT':'LTU','LV':'LAT','EE':'EST','MD':'MDA','BY':'BLR','KZ':'KAZ','UZ':'UZB'
+  };
+  var t = tla.toUpperCase();
+  if (iso2map[t]) t = iso2map[t];
   var flags = {
     BRA:'🇧🇷',ARG:'🇦🇷',FRA:'🇫🇷',ENG:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',GER:'🇩🇪',ESP:'🇪🇸',POR:'🇵🇹',ITA:'🇮🇹',
     URU:'🇺🇾',COL:'🇨🇴',MEX:'🇲🇽',USA:'🇺🇸',CAN:'🇨🇦',JPN:'🇯🇵',KOR:'🇰🇷',AUS:'🇦🇺',
@@ -627,7 +656,7 @@ function flagEmoji(tla) {
     FIN:'🇫🇮',NOR:'🇳🇴',SWE:'🇸🇪',ISL:'🇮🇸',IRL:'🇮🇪',SCT:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',
     RUS:'🇷🇺',BLR:'🇧🇾',LTU:'🇱🇹',LAT:'🇱🇻',EST:'🇪🇪',MDA:'🇲🇩',GEO:'🇬🇪',ARM:'🇦🇲',AZE:'🇦🇿'
   };
-  return flags[tla.toUpperCase()] || '🏳️';
+  return flags[t] || '🏳️';
 }
 
 // Nomes dos países em português
@@ -655,7 +684,11 @@ var NOMES_PT = {
 function teamName(team) {
   if (!team) return '?';
   var tla = team.tla ? team.tla.toUpperCase() : '';
-  return NOMES_PT[tla] || team.shortName || team.name || tla || '?';
+  if (tla && NOMES_PT[tla]) return NOMES_PT[tla];
+  // Limpar TLA embutido no nome que a API retorna (ex: "Brasil BR" → "Brasil")
+  var raw = team.shortName || team.name || tla || '?';
+  raw = raw.replace(/\s+[A-Z]{2,3}$/, '').replace(/^[A-Z]{2,3}\s+/, '').trim();
+  return raw || tla || '?';
 }
 
 function getMockMatches() {
