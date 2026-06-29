@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -16,7 +16,7 @@
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Segoe UI', Inter, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
- 
+
 /* HEADER */
 .header { background:#fff; border-bottom:3px solid var(--red); padding:0 1.5rem; display:flex; align-items:center; justify-content:space-between; height:64px; position:sticky; top:0; z-index:100; }
 .header-logo { display:flex; align-items:center; gap:12px; }
@@ -25,14 +25,14 @@ body { font-family: 'Segoe UI', Inter, sans-serif; background: var(--bg); color:
 .sync-badge { font-size:11px; color:var(--text3); display:flex; align-items:center; gap:5px; }
 .sync-dot { width:7px; height:7px; border-radius:50%; background:#ccc; }
 .sync-dot.ok { background:#22c55e; } .sync-dot.err { background:var(--red); }
- 
+
 /* PLAYER BAR */
 .player-bar { background:#fff; border-bottom:1px solid var(--border); padding:10px 1.5rem; display:flex; align-items:center; gap:12px; }
 .player-bar label { font-size:12px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.06em; white-space:nowrap; }
 .player-select { border:2px solid var(--border); border-radius:var(--radius); padding:8px 12px; font-size:14px; font-weight:600; color:var(--text); background:#fff; cursor:pointer; min-width:180px; outline:none; transition:border-color .2s; }
 .player-select:focus { border-color:var(--red); }
 .player-pts-badge { background:var(--red-light); color:var(--red); border-radius:var(--radius); padding:6px 14px; font-size:14px; font-weight:800; margin-left:auto; display:none; }
- 
+
 /* MASCOTE BAR */
 .mascote-bar { background:#fff8e7; border-bottom:1px solid #f0e0a0; padding:8px 1.5rem; display:flex; align-items:flex-start; gap:12px; }
 .mascote-avatar { font-size:28px; flex-shrink:0; line-height:1; margin-top:2px; }
@@ -41,25 +41,25 @@ body { font-family: 'Segoe UI', Inter, sans-serif; background: var(--bg); color:
 .mascote-dica { font-size:13px; color:#5c4200; line-height:1.5; }
 .mascote-btn { background:none; border:1px solid #d4a800; border-radius:20px; padding:4px 12px; font-size:11px; color:#9a6f00; cursor:pointer; white-space:nowrap; margin-top:6px; font-weight:600; transition:background .2s; }
 .mascote-btn:hover { background:#ffeaa0; }
- 
+
 /* APP */
 .app { max-width:1100px; margin:0 auto; padding:1.5rem 1rem; }
 .hero-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:1.5rem; }
 .hero-stat { background:#fff; border-radius:var(--radius); padding:14px; border:1px solid var(--border); text-align:center; }
 .hero-stat .val { font-size:24px; font-weight:800; color:var(--red); }
 .hero-stat .lbl { font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:.06em; margin-top:2px; }
- 
+
 /* TABS */
 .tabs { display:flex; border-bottom:2px solid var(--border); margin-bottom:1.2rem; }
 .tab-btn { padding:10px 20px; font-size:13px; font-weight:700; color:var(--text2); background:none; border:none; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; text-transform:uppercase; letter-spacing:.06em; transition:all .2s; }
 .tab-btn.active { color:var(--red); border-bottom-color:var(--red); }
 .tab-content { display:none; } .tab-content.active { display:block; }
- 
+
 /* SCORING */
 .scoring-legend { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:1rem; }
 .scoring-chip { display:flex; align-items:center; gap:6px; background:var(--bg); border-radius:20px; padding:4px 12px; font-size:12px; color:var(--text2); }
 .scoring-chip .pts { font-weight:800; color:var(--red); font-size:13px; }
- 
+
 /* MATCH CARDS */
 .section-title { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--text2); margin-bottom:12px; margin-top:8px; }
 .match-card { border:1px solid var(--border); border-radius:var(--radius); margin-bottom:12px; overflow:hidden; }
@@ -76,7 +76,7 @@ body { font-family: 'Segoe UI', Inter, sans-serif; background: var(--bg); color:
 .score-num { font-size:26px; font-weight:800; color:var(--red); letter-spacing:2px; }
 .score-sep { color:var(--text3); }
 .score-label { font-size:10px; color:var(--text3); margin-top:2px; text-transform:uppercase; letter-spacing:.05em; }
- 
+
 /* PALPITE */
 .palpite-section { padding:14px 16px; border-top:1px solid var(--border); }
 .palpite-section label { font-size:11px; color:var(--text2); font-weight:700; letter-spacing:.06em; text-transform:uppercase; display:block; margin-bottom:8px; }
@@ -87,7 +87,7 @@ body { font-family: 'Segoe UI', Inter, sans-serif; background: var(--bg); color:
 .btn-submit { width:100%; background:var(--red); color:#fff; border:none; border-radius:var(--radius); padding:10px; font-size:13px; font-weight:700; cursor:pointer; letter-spacing:.05em; text-transform:uppercase; transition:background .2s; }
 .btn-submit:hover { background:var(--red-dark); }
 .palpite-existing { font-size:12px; color:var(--green); background:var(--green-light); border-radius:4px; padding:6px 10px; margin-bottom:8px; }
- 
+
 /* RANKING */
 .card { background:var(--card); border-radius:var(--radius); border:1px solid var(--border); overflow:hidden; }
 .card-header { background:var(--red); color:#fff; padding:10px 16px; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; display:flex; align-items:center; justify-content:space-between; }
@@ -102,7 +102,7 @@ body { font-family: 'Segoe UI', Inter, sans-serif; background: var(--bg); color:
 .rank-pts-label { font-size:10px; color:var(--text3); text-align:right; }
 .rank-progress { height:3px; background:var(--border); border-radius:2px; margin-top:4px; }
 .rank-progress-bar { height:100%; background:var(--red); border-radius:2px; transition:width .5s; }
- 
+
 /* HISTORICO */
 .hist-table { width:100%; border-collapse:collapse; font-size:13px; }
 .hist-table th { padding:8px 10px; background:var(--bg); text-align:left; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--text2); border-bottom:1px solid var(--border); }
@@ -111,12 +111,12 @@ body { font-family: 'Segoe UI', Inter, sans-serif; background: var(--bg); color:
 .pts-chip { display:inline-block; padding:2px 8px; border-radius:10px; font-size:12px; font-weight:700; }
 .pts-3 { background:#E8F5E9; color:#1B5E20; } .pts-2 { background:var(--amber-light); color:#7a5c00; }
 .pts-1 { background:#E3F2FD; color:#0D47A1; } .pts-0 { background:var(--bg); color:var(--text3); }
- 
+
 /* TOAST */
 .toast { position:fixed; bottom:24px; right:24px; background:var(--text); color:#fff; padding:12px 20px; border-radius:var(--radius); font-size:13px; font-weight:600; z-index:9999; opacity:0; transform:translateY(10px); transition:all .3s; max-width:320px; }
 .toast.show { opacity:1; transform:translateY(0); }
 .toast.success { background:var(--green); } .toast.error { background:var(--red); }
- 
+
 /* UTILS */
 .loading { text-align:center; padding:2rem; color:var(--text3); font-size:13px; }
 .spinner { display:inline-block; width:20px; height:20px; border:2px solid var(--border); border-top-color:var(--red); border-radius:50%; animation:spin .8s linear infinite; margin-bottom:8px; }
@@ -126,9 +126,9 @@ body { font-family: 'Segoe UI', Inter, sans-serif; background: var(--bg); color:
 </style>
 </head>
 <body>
- 
+
 <div class="toast" id="toast"></div>
- 
+
 <!-- HEADER -->
 <div class="header">
   <div class="header-logo">
@@ -143,7 +143,7 @@ body { font-family: 'Segoe UI', Inter, sans-serif; background: var(--bg); color:
     <span id="syncLabel">Conectando...</span>
   </div>
 </div>
- 
+
 <!-- PLAYER BAR -->
 <div class="player-bar">
   <label>Participante:</label>
@@ -161,7 +161,7 @@ body { font-family: 'Segoe UI', Inter, sans-serif; background: var(--bg); color:
     <span id="playerPtsVal">0</span> pts
   </div>
 </div>
- 
+
 <!-- MASCOTE ABELÃO -->
 <div class="mascote-bar">
   <div class="mascote-avatar">🐱</div>
@@ -171,7 +171,7 @@ body { font-family: 'Segoe UI', Inter, sans-serif; background: var(--bg); color:
     <button class="mascote-btn" onclick="novaDica()">Nova dica 🎲</button>
   </div>
 </div>
- 
+
 <!-- APP -->
 <div class="app">
   <div class="hero-stats">
@@ -179,13 +179,13 @@ body { font-family: 'Segoe UI', Inter, sans-serif; background: var(--bg); color:
     <div class="hero-stat"><div class="val" id="statHoje">—</div><div class="lbl">Jogos Hoje</div></div>
     <div class="hero-stat"><div class="val" id="statPalpites">—</div><div class="lbl">Palpites Registrados</div></div>
   </div>
- 
+
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('jogos')">📅 Jogos</button>
     <button class="tab-btn" onclick="switchTab('ranking')">🏆 Ranking</button>
     <button class="tab-btn" onclick="switchTab('historico')">📋 Histórico</button>
   </div>
- 
+
   <div class="tab-content active" id="tab-jogos">
     <div class="scoring-legend">
       <div class="scoring-chip"><span class="pts">3 pts</span> Placar exato</div>
@@ -194,16 +194,16 @@ body { font-family: 'Segoe UI', Inter, sans-serif; background: var(--bg); color:
     </div>
     <div id="matchesContainer"><div class="loading"><div class="spinner"></div><br>Carregando jogos...</div></div>
   </div>
- 
+
   <div class="tab-content" id="tab-ranking">
     <div id="rankingContainer"><div class="loading"><div class="spinner"></div><br>Calculando ranking...</div></div>
   </div>
- 
+
   <div class="tab-content" id="tab-historico">
     <div id="historicoContainer"><div class="empty"><div class="emoji">🗂️</div>Selecione um participante para ver o histórico.</div></div>
   </div>
 </div>
- 
+
 <script>
 // ============================================================
 // CREDENCIAIS
@@ -212,7 +212,7 @@ var SB_URL  = 'https://hljvcyxckzgsrzdafpcq.supabase.co';
 var SB_KEY  = 'sb_publishable_PQ6dP6z_lsr92QRr9YQo_g_5-e_7j4J';
 var FD_KEY  = '021f60308fe04a6fac809b8088397666';
 var COMP_ID = 2000;
- 
+
 // ============================================================
 // ESTADO
 // ============================================================
@@ -221,7 +221,7 @@ var currentPlayer  = '';
 var allMatches     = [];
 var allPalpites    = [];
 var HISTORICO_PTS  = { Leo:71, Mayra:60, Caio:57, Joca:54, Ronaldo:54, Maia:43, Ana:41 };
- 
+
 // ============================================================
 // DICAS DO ABELÃO
 // ============================================================
@@ -240,37 +240,37 @@ var DICAS = [
   "Um goleiro sabe: até o último segundo pode mudar tudo. Palpite até o prazo final! 🐱‍💻",
 ];
 var dicaIdx = Math.floor(Math.random() * DICAS.length);
- 
+
 function novaDica() {
   dicaIdx = (dicaIdx + 1) % DICAS.length;
   document.getElementById('abeldica').textContent = DICAS[dicaIdx];
 }
- 
+
 // ============================================================
 // INIT
 // ============================================================
 function initApp() {
   document.getElementById('abeldica').textContent = DICAS[dicaIdx];
- 
+
   try {
     sbClient = window.supabase.createClient(SB_URL, SB_KEY);
   } catch(e) {
     console.error('Supabase init error:', e);
     setSyncStatus(false, 'Erro ao iniciar Supabase');
   }
- 
+
   loadMatches().then(function() {
     renderMatches();
     updateStats();
   });
- 
+
   if (sbClient) {
     loadAllPalpites().then(function() {
       renderAll();
       setSyncStatus(true, 'Atualizado ' + fmtHora(new Date()));
     });
   }
- 
+
   setInterval(function() {
     loadMatches().then(function() {
       if (sbClient) loadAllPalpites().then(renderAll);
@@ -279,7 +279,7 @@ function initApp() {
     });
   }, 15 * 60 * 1000);
 }
- 
+
 // ============================================================
 // FOOTBALL DATA API (com fallback de proxies CORS)
 // ============================================================
@@ -289,7 +289,7 @@ function loadMatches() {
   var to    = new Date(today); to.setDate(to.getDate() + 4);
   var fmt   = function(d) { return d.toISOString().split('T')[0]; };
   var apiUrl = 'https://api.football-data.org/v4/competitions/' + COMP_ID + '/matches?dateFrom=' + fmt(from) + '&dateTo=' + fmt(to);
- 
+
   var attempts = [
     function() {
       return fetch(apiUrl, { headers: { 'X-Auth-Token': FD_KEY }, signal: AbortSignal.timeout(6000) })
@@ -305,7 +305,7 @@ function loadMatches() {
         .then(function(d) { return JSON.parse(d.contents); });
     }
   ];
- 
+
   function tryNext(i) {
     if (i >= attempts.length) {
       allMatches = getMockMatches();
@@ -320,10 +320,10 @@ function loadMatches() {
       return tryNext(i + 1);
     });
   }
- 
+
   return tryNext(0);
 }
- 
+
 // ============================================================
 // SUPABASE
 // ============================================================
@@ -339,12 +339,12 @@ function loadAllPalpites() {
     document.getElementById('statPalpites').textContent = allPalpites.length;
   });
 }
- 
+
 function savePalpite(matchId, homeGoals, awayGoals, homeTeam, awayTeam, matchDate) {
   if (!sbClient) { showToast('Supabase não conectado.', 'error'); return; }
   if (!currentPlayer) { showToast('Selecione seu nome primeiro!', 'error'); return; }
   if (homeGoals === '' || awayGoals === '') { showToast('Preencha o placar completo.', 'error'); return; }
- 
+
   var record = {
     player: currentPlayer,
     match_id: String(matchId),
@@ -356,14 +356,14 @@ function savePalpite(matchId, homeGoals, awayGoals, homeTeam, awayTeam, matchDat
     away_goals: parseInt(awayGoals),
     created_at: new Date().toISOString()
   };
- 
+
   sbClient.from('palpites').upsert(record, { onConflict: 'player,match_id' }).then(function(res) {
     if (res.error) { showToast('Erro: ' + res.error.message, 'error'); return; }
     showToast('Palpite ' + homeGoals + 'x' + awayGoals + ' salvo! ✅', 'success');
     loadAllPalpites().then(renderAll);
   });
 }
- 
+
 // ============================================================
 // PONTUAÇÃO
 // ============================================================
@@ -376,7 +376,7 @@ function calcPoints(palp, match) {
   if (resReal === resPalp) return (resReal === 0) ? 1 : 2;
   return 0;
 }
- 
+
 function calcRanking() {
   var pts = {};
   ['Leo','Mayra','Caio','Joca','Ronaldo','Maia','Ana'].forEach(function(p) {
@@ -397,7 +397,7 @@ function calcRanking() {
     return r;
   }).sort(function(a,b) { return b.total - a.total || b.acertos - a.acertos; });
 }
- 
+
 // ============================================================
 // RENDER
 // ============================================================
@@ -407,28 +407,28 @@ function renderAll() {
   updateStats();
   if (currentPlayer) renderHistorico();
 }
- 
+
 function updateStats() {
   var hoje = allMatches.filter(function(m) {
     return new Date(m.utcDate).toDateString() === new Date().toDateString();
   }).length;
   document.getElementById('statHoje').textContent = hoje;
 }
- 
+
 function renderMatches() {
   var c = document.getElementById('matchesContainer');
   if (!allMatches.length) { c.innerHTML = '<div class="empty"><div class="emoji">⚽</div>Nenhum jogo encontrado.</div>'; return; }
- 
+
   // Exibe apenas jogos não encerrados (agendados, ao vivo, pausados)
   var matchesVisiveis = allMatches.filter(function(m) {
     return m.status !== 'FINISHED';
   });
- 
+
   if (!matchesVisiveis.length) {
     c.innerHTML = '<div class="empty"><div class="emoji">⚽</div>Nenhum jogo pendente no momento. Aguarde a próxima rodada!</div>';
     return;
   }
- 
+
   var grouped = {};
   matchesVisiveis.forEach(function(m) {
     var d = new Date(m.utcDate);
@@ -436,20 +436,20 @@ function renderMatches() {
     if (!grouped[key]) grouped[key] = [];
     grouped[key].push(m);
   });
- 
+
   var html = '';
   Object.keys(grouped).forEach(function(dateLabel) {
     html += '<div class="section-title">' + dateLabel.toUpperCase() + '</div>';
     grouped[dateLabel].forEach(function(m) { html += buildMatchCard(m); });
   });
   c.innerHTML = html;
- 
+
   document.querySelectorAll('.btn-palpite').forEach(function(btn) {
     var mid = btn.getAttribute('data-mid');
     btn.onclick = (function(id) { return function() { submitPalpite(id); }; })(mid);
   });
 }
- 
+
 function buildMatchCard(m) {
   var homeName = teamName(m.homeTeam);
   var awayName = teamName(m.awayTeam);
@@ -459,7 +459,7 @@ function buildMatchCard(m) {
   var hora = d.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
   var s = m.score && m.score.fullTime;
   var st = m.status;
- 
+
   var status = '', scoreHtml = '';
   if (st === 'IN_PLAY' || st === 'PAUSED') {
     status = '<span class="status-live">AO VIVO</span>';
@@ -471,10 +471,10 @@ function buildMatchCard(m) {
     status = '<span class="status-ns">' + hora + '</span>';
     scoreHtml = '<div class="score-box"><div class="score-num" style="font-size:18px;color:var(--text3)">vs</div><div class="score-label">' + hora + ' (Brasília)</div></div>';
   }
- 
+
   var existingPalp = currentPlayer ? allPalpites.find(function(p) { return p.player === currentPlayer && String(p.match_id) === String(m.id); }) : null;
   var palpiteHtml = '';
- 
+
   if (st === 'FINISHED') {
     if (existingPalp) {
       var pts = calcPoints(existingPalp, m);
@@ -493,14 +493,14 @@ function buildMatchCard(m) {
     var vA = existingPalp ? existingPalp.away_goals : '';
     palpiteHtml = '<div class="palpite-section">' + existHtml + '<label>Seu palpite</label><div class="palpite-grid"><input class="palpite-score-in" type="number" min="0" max="20" id="h-' + m.id + '" value="' + vH + '" placeholder="0"><div class="palpite-sep">×</div><input class="palpite-score-in" type="number" min="0" max="20" id="a-' + m.id + '" value="' + vA + '" placeholder="0"></div><button class="btn-submit btn-palpite" data-mid="' + m.id + '">' + btnLabel + '</button></div>';
   }
- 
+
   var round = (m.stage || 'GROUP_STAGE').replace('GROUP_STAGE','Fase de Grupos').replace('ROUND_OF_16','Oitavas de Final').replace('QUARTER_FINALS','Quartas de Final').replace('SEMI_FINALS','Semifinal').replace('FINAL','Final').replace(/_/g,' ');
   var group = m.group ? ' · ' + m.group.replace('Group ','Grupo ') : '';
- 
- 
+
+
   return '<div class="match-card"><div class="match-header"><span>' + round + group + '</span>' + status + '</div><div class="match-body"><div class="team-home"><div class="team-name">' + homeName + ' <span class="team-flag">' + homeFlag + '</span></div></div>' + scoreHtml + '<div class="team-away"><div class="team-name"><span class="team-flag">' + awayFlag + '</span> ' + awayName + '</div></div></div>' + palpiteHtml + '</div>';
 }
- 
+
 function submitPalpite(matchId) {
   var hEl = document.getElementById('h-' + matchId);
   var aEl = document.getElementById('a-' + matchId);
@@ -511,7 +511,7 @@ function submitPalpite(matchId) {
   var away = teamName(match.awayTeam);
   savePalpite(matchId, hEl.value, aEl.value, home, away, match.utcDate);
 }
- 
+
 function renderRanking() {
   var ranking = calcRanking();
   var maxPts = ranking[0] ? ranking[0].total : 1;
@@ -524,7 +524,7 @@ function renderRanking() {
   html += '</div></div>';
   document.getElementById('rankingContainer').innerHTML = html;
 }
- 
+
 function renderHistorico() {
   if (!currentPlayer) return;
   var meusPalpites = allPalpites.filter(function(p) { return p.player === currentPlayer; });
@@ -544,7 +544,7 @@ function renderHistorico() {
   html += '</tbody></table>';
   document.getElementById('historicoContainer').innerHTML = html;
 }
- 
+
 // ============================================================
 // UTILS
 // ============================================================
@@ -561,7 +561,7 @@ function onPlayerChange() {
   }
   renderAll();
 }
- 
+
 function switchTab(name) {
   document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
   document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
@@ -571,23 +571,23 @@ function switchTab(name) {
   if (name === 'ranking') renderRanking();
   if (name === 'historico') renderHistorico();
 }
- 
+
 function setSyncStatus(ok, label) {
   var dot = document.getElementById('syncDot');
   var lbl = document.getElementById('syncLabel');
   dot.className = 'sync-dot ' + (ok ? 'ok' : 'err');
   lbl.textContent = label;
 }
- 
+
 function fmtHora(d) { return d.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' }); }
- 
+
 function showToast(msg, type) {
   var t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast show ' + (type || '');
   setTimeout(function() { t.className = 'toast'; }, 3500);
 }
- 
+
 function flagEmoji(tla) {
   if (!tla) return '🏳️';
   var flags = {
@@ -613,7 +613,7 @@ function flagEmoji(tla) {
   };
   return flags[tla.toUpperCase()] || '🏳️';
 }
- 
+
 // Nomes dos países em português
 var NOMES_PT = {
   BRA:'Brasil',ARG:'Argentina',FRA:'França',ENG:'Inglaterra',GER:'Alemanha',ESP:'Espanha',
@@ -635,13 +635,13 @@ var NOMES_PT = {
   MAL:'Malásia',RSA:'África do Sul',ANG:'Angola',MOZ:'Moçambique',ZIM:'Zimbábue',
   ZAM:'Zâmbia',UGA:'Uganda',KEN:'Quênia',MLI:'Mali',GUI:'Guiné',GAB:'Gabão',COD:'Congo'
 };
- 
+
 function teamName(team) {
   if (!team) return '?';
   var tla = team.tla ? team.tla.toUpperCase() : '';
   return NOMES_PT[tla] || team.shortName || team.name || tla || '?';
 }
- 
+
 function getMockMatches() {
   var t = new Date().toISOString();
   return [
@@ -650,7 +650,7 @@ function getMockMatches() {
     { id:9003, utcDate:t, status:'IN_PLAY',   stage:'GROUP_STAGE', group:'Group C', homeTeam:{name:'Espanha',shortName:'Espanha',tla:'ESP'}, awayTeam:{name:'Portugal',shortName:'Portugal',tla:'POR'}, score:{fullTime:{home:1,away:0}} }
   ];
 }
- 
+
 // START
 initApp();
 </script>
