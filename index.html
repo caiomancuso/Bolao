@@ -4,416 +4,143 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bolão Copa 2026 🏆</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
-  :root {
-    --red: #C8102E;
-    --red-dark: #9E0D23;
-    --red-light: #f8e8eb;
-    --gold: #C9A84C;
-    --gold-light: #FFF8E7;
-    --bg: #F4F4F6;
-    --card: #FFFFFF;
-    --text: #1A1A1A;
-    --text-2: #5a5a5a;
-    --text-3: #999;
-    --border: #E0E0E0;
-    --radius: 8px;
-    --green: #1A6B3A;
-    --green-light: #e6f4ec;
-    --amber: #B8860B;
-    --amber-light: #FFF3CD;
-  }
+:root {
+  --red: #C8102E; --red-dark: #9E0D23; --red-light: #f8e8eb;
+  --gold: #C9A84C; --bg: #F4F4F6; --card: #FFFFFF;
+  --text: #1A1A1A; --text2: #5a5a5a; --text3: #999;
+  --border: #E0E0E0; --radius: 8px;
+  --green: #1A6B3A; --green-light: #e6f4ec;
+  --amber: #B8860B; --amber-light: #FFF3CD;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Inter, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+/* HEADER */
+.header { background:#fff; border-bottom:3px solid var(--red); padding:0 1.5rem; display:flex; align-items:center; justify-content:space-between; height:64px; position:sticky; top:0; z-index:100; }
+.header-logo { display:flex; align-items:center; gap:12px; }
+.header-title { font-size:1.1rem; font-weight:700; color:var(--red); letter-spacing:.04em; text-transform:uppercase; }
+.header-subtitle { font-size:.72rem; color:var(--text2); letter-spacing:.06em; text-transform:uppercase; }
+.sync-badge { font-size:11px; color:var(--text3); display:flex; align-items:center; gap:5px; }
+.sync-dot { width:7px; height:7px; border-radius:50%; background:#ccc; }
+.sync-dot.ok { background:#22c55e; } .sync-dot.err { background:var(--red); }
 
-  body {
-    font-family: 'Segoe UI', Inter, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
+/* PLAYER BAR */
+.player-bar { background:#fff; border-bottom:1px solid var(--border); padding:10px 1.5rem; display:flex; align-items:center; gap:12px; }
+.player-bar label { font-size:12px; color:var(--text2); font-weight:700; text-transform:uppercase; letter-spacing:.06em; white-space:nowrap; }
+.player-select { border:2px solid var(--border); border-radius:var(--radius); padding:8px 12px; font-size:14px; font-weight:600; color:var(--text); background:#fff; cursor:pointer; min-width:180px; outline:none; transition:border-color .2s; }
+.player-select:focus { border-color:var(--red); }
+.player-pts-badge { background:var(--red-light); color:var(--red); border-radius:var(--radius); padding:6px 14px; font-size:14px; font-weight:800; margin-left:auto; display:none; }
 
-  /* HEADER */
-  .header {
-    background: #fff;
-    border-bottom: 3px solid var(--red);
-    padding: 0 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 64px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .header-logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .header-logo .trophy { font-size: 28px; }
-  .header-title { font-size: 1.1rem; font-weight: 700; color: var(--red); letter-spacing: 0.04em; text-transform: uppercase; }
-  .header-subtitle { font-size: 0.72rem; color: var(--text-2); letter-spacing: 0.06em; text-transform: uppercase; }
+/* MASCOTE BAR */
+.mascote-bar { background:#fff8e7; border-bottom:1px solid #f0e0a0; padding:8px 1.5rem; display:flex; align-items:flex-start; gap:12px; }
+.mascote-avatar { font-size:28px; flex-shrink:0; line-height:1; margin-top:2px; }
+.mascote-content { flex:1; }
+.mascote-title { font-size:11px; font-weight:700; color:#9a6f00; text-transform:uppercase; letter-spacing:.08em; margin-bottom:3px; }
+.mascote-dica { font-size:13px; color:#5c4200; line-height:1.5; }
+.mascote-btn { background:none; border:1px solid #d4a800; border-radius:20px; padding:4px 12px; font-size:11px; color:#9a6f00; cursor:pointer; white-space:nowrap; margin-top:6px; font-weight:600; transition:background .2s; }
+.mascote-btn:hover { background:#ffeaa0; }
 
-  .header-right { display: flex; align-items: center; gap: 12px; }
-  .sync-badge {
-    font-size: 11px; color: var(--text-3); display: flex; align-items: center; gap: 4px;
-  }
-  .sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #ccc; }
-  .sync-dot.ok { background: #22c55e; }
-  .sync-dot.err { background: var(--red); }
+/* APP */
+.app { max-width:1100px; margin:0 auto; padding:1.5rem 1rem; }
+.hero-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:1.5rem; }
+.hero-stat { background:#fff; border-radius:var(--radius); padding:14px; border:1px solid var(--border); text-align:center; }
+.hero-stat .val { font-size:24px; font-weight:800; color:var(--red); }
+.hero-stat .lbl { font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:.06em; margin-top:2px; }
 
-  /* LAYOUT */
-  .app { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem; }
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-  @media (max-width: 750px) { .grid-2 { grid-template-columns: 1fr; } }
-  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-  @media (max-width: 700px) { .grid-3 { grid-template-columns: 1fr; } }
+/* TABS */
+.tabs { display:flex; border-bottom:2px solid var(--border); margin-bottom:1.2rem; }
+.tab-btn { padding:10px 20px; font-size:13px; font-weight:700; color:var(--text2); background:none; border:none; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; text-transform:uppercase; letter-spacing:.06em; transition:all .2s; }
+.tab-btn.active { color:var(--red); border-bottom-color:var(--red); }
+.tab-content { display:none; } .tab-content.active { display:block; }
 
-  /* CARDS */
-  .card {
-    background: var(--card);
-    border-radius: var(--radius);
-    border: 1px solid var(--border);
-    overflow: hidden;
-  }
-  .card-header {
-    background: var(--red);
-    color: #fff;
-    padding: 10px 16px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .card-header .badge {
-    background: rgba(255,255,255,0.2);
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 10px;
-  }
-  .card-body { padding: 16px; }
+/* SCORING */
+.scoring-legend { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:1rem; }
+.scoring-chip { display:flex; align-items:center; gap:6px; background:var(--bg); border-radius:20px; padding:4px 12px; font-size:12px; color:var(--text2); }
+.scoring-chip .pts { font-weight:800; color:var(--red); font-size:13px; }
 
-  /* PLACAR RANKING */
-  .ranking-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .ranking-item:last-child { border-bottom: none; }
-  .rank-pos {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 700;
-    flex-shrink: 0;
-  }
-  .rank-pos.p1 { background: var(--gold); color: #fff; }
-  .rank-pos.p2 { background: #C0C0C0; color: #fff; }
-  .rank-pos.p3 { background: #CD7F32; color: #fff; }
-  .rank-pos.other { background: var(--bg); color: var(--text-2); }
-  .rank-name { flex: 1; font-size: 14px; font-weight: 600; }
-  .rank-pts {
-    font-size: 20px; font-weight: 800; color: var(--red);
-    min-width: 40px; text-align: right;
-  }
-  .rank-pts-label { font-size: 10px; color: var(--text-3); text-align: right; }
-  .rank-progress {
-    height: 3px; background: var(--border); border-radius: 2px; margin-top: 4px;
-  }
-  .rank-progress-bar { height: 100%; background: var(--red); border-radius: 2px; transition: width 0.5s; }
+/* MATCH CARDS */
+.section-title { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--text2); margin-bottom:12px; margin-top:8px; }
+.match-card { border:1px solid var(--border); border-radius:var(--radius); margin-bottom:12px; overflow:hidden; }
+.match-header { background:var(--bg); padding:6px 12px; font-size:11px; color:var(--text2); display:flex; justify-content:space-between; align-items:center; }
+.status-live { background:var(--red); color:#fff; padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; animation:pulse 1.5s infinite; }
+.status-ft { color:var(--text3); font-size:10px; }
+.status-ns { color:var(--amber); font-size:10px; font-weight:600; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
+.match-body { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; padding:14px 16px; gap:12px; }
+.team-name { font-size:14px; font-weight:700; }
+.team-home { text-align:right; } .team-away { text-align:left; }
+.team-flag { font-size:24px; display:block; margin-bottom:4px; }
+.score-box { text-align:center; background:var(--bg); border-radius:6px; padding:8px 16px; min-width:80px; }
+.score-num { font-size:26px; font-weight:800; color:var(--red); letter-spacing:2px; }
+.score-sep { color:var(--text3); }
+.score-label { font-size:10px; color:var(--text3); margin-top:2px; text-transform:uppercase; letter-spacing:.05em; }
 
-  /* JOGOS DO DIA */
-  .match-card {
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    margin-bottom: 12px;
-    overflow: hidden;
-  }
-  .match-header {
-    background: var(--bg);
-    padding: 6px 12px;
-    font-size: 11px;
-    color: var(--text-2);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .match-header .status-live {
-    background: var(--red); color: #fff;
-    padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700;
-    animation: pulse 1.5s infinite;
-  }
-  .match-header .status-ft { color: var(--text-3); font-size: 10px; }
-  .match-header .status-ns { color: var(--amber); font-size: 10px; font-weight: 600; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+/* PALPITE */
+.palpite-section { padding:14px 16px; border-top:1px solid var(--border); }
+.palpite-section label { font-size:11px; color:var(--text2); font-weight:700; letter-spacing:.06em; text-transform:uppercase; display:block; margin-bottom:8px; }
+.palpite-grid { display:grid; grid-template-columns:1fr auto 1fr; gap:8px; align-items:center; margin-bottom:10px; }
+.palpite-score-in { width:100%; text-align:center; font-size:20px; font-weight:700; border:2px solid var(--border); border-radius:6px; padding:8px 4px; color:var(--red); background:#fff; outline:none; transition:border-color .2s; }
+.palpite-score-in:focus { border-color:var(--red); }
+.palpite-sep { text-align:center; color:var(--text3); font-size:18px; font-weight:700; }
+.btn-submit { width:100%; background:var(--red); color:#fff; border:none; border-radius:var(--radius); padding:10px; font-size:13px; font-weight:700; cursor:pointer; letter-spacing:.05em; text-transform:uppercase; transition:background .2s; }
+.btn-submit:hover { background:var(--red-dark); }
+.palpite-existing { font-size:12px; color:var(--green); background:var(--green-light); border-radius:4px; padding:6px 10px; margin-bottom:8px; }
 
-  .match-body {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    padding: 14px 16px;
-    gap: 12px;
-  }
-  .team-name { font-size: 14px; font-weight: 700; }
-  .team-home { text-align: right; }
-  .team-away { text-align: left; }
-  .team-flag { font-size: 24px; display: block; margin-bottom: 4px; }
+/* RANKING */
+.card { background:var(--card); border-radius:var(--radius); border:1px solid var(--border); overflow:hidden; }
+.card-header { background:var(--red); color:#fff; padding:10px 16px; font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; display:flex; align-items:center; justify-content:space-between; }
+.card-header .badge { background:rgba(255,255,255,.2); padding:2px 8px; border-radius:10px; font-size:10px; }
+.card-body { padding:16px; }
+.ranking-item { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--border); }
+.ranking-item:last-child { border-bottom:none; }
+.rank-pos { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0; }
+.rank-pos.p1 { background:var(--gold); color:#fff; } .rank-pos.p2 { background:#C0C0C0; color:#fff; } .rank-pos.p3 { background:#CD7F32; color:#fff; } .rank-pos.other { background:var(--bg); color:var(--text2); }
+.rank-name { flex:1; font-size:14px; font-weight:600; }
+.rank-pts { font-size:20px; font-weight:800; color:var(--red); min-width:40px; text-align:right; }
+.rank-pts-label { font-size:10px; color:var(--text3); text-align:right; }
+.rank-progress { height:3px; background:var(--border); border-radius:2px; margin-top:4px; }
+.rank-progress-bar { height:100%; background:var(--red); border-radius:2px; transition:width .5s; }
 
-  .score-box {
-    text-align: center;
-    background: var(--bg);
-    border-radius: 6px;
-    padding: 8px 16px;
-    min-width: 80px;
-  }
-  .score-num { font-size: 26px; font-weight: 800; color: var(--red); letter-spacing: 2px; }
-  .score-sep { color: var(--text-3); }
-  .score-label { font-size: 10px; color: var(--text-3); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+/* HISTORICO */
+.hist-table { width:100%; border-collapse:collapse; font-size:13px; }
+.hist-table th { padding:8px 10px; background:var(--bg); text-align:left; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--text2); border-bottom:1px solid var(--border); }
+.hist-table td { padding:9px 10px; border-bottom:1px solid var(--border); vertical-align:middle; }
+.hist-table tr:last-child td { border-bottom:none; }
+.pts-chip { display:inline-block; padding:2px 8px; border-radius:10px; font-size:12px; font-weight:700; }
+.pts-3 { background:#E8F5E9; color:#1B5E20; } .pts-2 { background:var(--amber-light); color:#7a5c00; }
+.pts-1 { background:#E3F2FD; color:#0D47A1; } .pts-0 { background:var(--bg); color:var(--text3); }
 
-  /* PALPITE FORM */
-  .palpite-section { padding: 14px 16px; border-top: 1px solid var(--border); }
-  .palpite-section label { font-size: 11px; color: var(--text-2); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; display: block; margin-bottom: 8px; }
+/* TOAST */
+.toast { position:fixed; bottom:24px; right:24px; background:var(--text); color:#fff; padding:12px 20px; border-radius:var(--radius); font-size:13px; font-weight:600; z-index:9999; opacity:0; transform:translateY(10px); transition:all .3s; max-width:320px; }
+.toast.show { opacity:1; transform:translateY(0); }
+.toast.success { background:var(--green); } .toast.error { background:var(--red); }
 
-  .palpite-grid {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 8px;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  .palpite-score-in {
-    width: 100%;
-    text-align: center;
-    font-size: 20px;
-    font-weight: 700;
-    border: 2px solid var(--border);
-    border-radius: 6px;
-    padding: 8px 4px;
-    color: var(--red);
-    background: #fff;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .palpite-score-in:focus { border-color: var(--red); }
-  .palpite-sep { text-align: center; color: var(--text-3); font-size: 18px; font-weight: 700; }
-
-  .btn-submit {
-    width: 100%;
-    background: var(--red);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius);
-    padding: 10px;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    transition: background 0.2s;
-  }
-  .btn-submit:hover { background: var(--red-dark); }
-  .btn-submit:disabled { background: #ccc; cursor: default; }
-
-  .palpite-existing {
-    font-size: 12px;
-    color: var(--green);
-    background: var(--green-light);
-    border-radius: 4px;
-    padding: 6px 10px;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  /* PLAYER SELECT */
-  .player-bar {
-    background: #fff;
-    border-bottom: 1px solid var(--border);
-    padding: 10px 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .player-bar label { font-size: 12px; color: var(--text-2); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
-  .player-select {
-    border: 2px solid var(--border);
-    border-radius: var(--radius);
-    padding: 8px 12px;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text);
-    background: #fff;
-    cursor: pointer;
-    min-width: 180px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .player-select:focus { border-color: var(--red); }
-
-  .player-pts-badge {
-    background: var(--red-light);
-    color: var(--red);
-    border-radius: var(--radius);
-    padding: 6px 14px;
-    font-size: 14px;
-    font-weight: 800;
-    margin-left: auto;
-  }
-
-  /* TABS */
-  .tabs { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 1.2rem; }
-  .tab-btn {
-    padding: 10px 20px;
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--text-2);
-    background: none;
-    border: none;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -2px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    transition: all 0.2s;
-  }
-  .tab-btn.active { color: var(--red); border-bottom-color: var(--red); }
-  .tab-content { display: none; }
-  .tab-content.active { display: block; }
-
-  /* TOAST */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: var(--text);
-    color: #fff;
-    padding: 12px 20px;
-    border-radius: var(--radius);
-    font-size: 13px;
-    font-weight: 600;
-    z-index: 9999;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.3s;
-    max-width: 320px;
-  }
-  .toast.show { opacity: 1; transform: translateY(0); }
-  .toast.success { background: var(--green); }
-  .toast.error { background: var(--red); }
-
-  /* LEGENDA DE PONTOS */
-  .scoring-legend {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 1rem;
-  }
-  .scoring-chip {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--bg);
-    border-radius: 20px;
-    padding: 4px 12px;
-    font-size: 12px;
-    color: var(--text-2);
-  }
-  .scoring-chip .pts {
-    font-weight: 800;
-    color: var(--red);
-    font-size: 13px;
-  }
-
-  /* HISTÓRICO TABLE */
-  .hist-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .hist-table th {
-    padding: 8px 10px;
-    background: var(--bg);
-    text-align: left;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--text-2);
-    border-bottom: 1px solid var(--border);
-  }
-  .hist-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-  .hist-table tr:last-child td { border-bottom: none; }
-  .pts-chip {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 700;
-  }
-  .pts-3 { background: #E8F5E9; color: #1B5E20; }
-  .pts-2 { background: var(--amber-light); color: #7a5c00; }
-  .pts-1 { background: #E3F2FD; color: #0D47A1; }
-  .pts-0 { background: var(--bg); color: var(--text-3); }
-
-  /* LOADING */
-  .loading {
-    text-align: center;
-    padding: 2rem;
-    color: var(--text-3);
-    font-size: 13px;
-  }
-  .spinner {
-    display: inline-block;
-    width: 20px; height: 20px;
-    border: 2px solid var(--border);
-    border-top-color: var(--red);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin-bottom: 8px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* EMPTY STATE */
-  .empty { text-align: center; padding: 2rem; color: var(--text-3); font-size: 13px; }
-  .empty .emoji { font-size: 32px; margin-bottom: 8px; }
-
-  
-
-  /* HERO STATS */
-  .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.5rem; }
-  .hero-stat { background: #fff; border-radius: var(--radius); padding: 14px; border: 1px solid var(--border); text-align: center; }
-  .hero-stat .val { font-size: 24px; font-weight: 800; color: var(--red); }
-  .hero-stat .lbl { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
-
-  .section-title {
-    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--text-2); margin-bottom: 12px;
-  }
+/* UTILS */
+.loading { text-align:center; padding:2rem; color:var(--text3); font-size:13px; }
+.spinner { display:inline-block; width:20px; height:20px; border:2px solid var(--border); border-top-color:var(--red); border-radius:50%; animation:spin .8s linear infinite; margin-bottom:8px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.empty { text-align:center; padding:2rem; color:var(--text3); font-size:13px; }
+.empty .emoji { font-size:32px; margin-bottom:8px; }
 </style>
 </head>
 <body>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <!-- HEADER -->
 <div class="header">
   <div class="header-logo">
-    <span class="trophy">🏆</span>
+    <span style="font-size:28px">🏆</span>
     <div>
       <div class="header-title">Bolão Copa 2026</div>
       <div class="header-subtitle">FIFA World Cup · USA·CAN·MEX</div>
     </div>
   </div>
-  <div class="header-right">
-    <div class="sync-badge">
-      <div class="sync-dot" id="syncDot"></div>
-      <span id="syncLabel">Conectando...</span>
-    </div>
+  <div class="sync-badge">
+    <div class="sync-dot" id="syncDot"></div>
+    <span id="syncLabel">Conectando...</span>
   </div>
 </div>
 
@@ -429,651 +156,453 @@
     <option value="Ronaldo">Ronaldo</option>
     <option value="Maia">Maia</option>
     <option value="Ana">Ana</option>
-    <option value="Abel">Abel (Goleiro 🐱)</option>
   </select>
-  <div class="player-pts-badge" id="playerPtsBadge" style="display:none">
+  <div class="player-pts-badge" id="playerPtsBadge">
     <span id="playerPtsVal">0</span> pts
   </div>
 </div>
 
-<!-- APP BODY -->
-<div class="app">
+<!-- MASCOTE ABELÃO -->
+<div class="mascote-bar">
+  <div class="mascote-avatar">🐱</div>
+  <div class="mascote-content">
+    <div class="mascote-title">Dicas do Abelão — Goleiro Oficial</div>
+    <div class="mascote-dica" id="abeldica">Carregando dica...</div>
+    <button class="mascote-btn" onclick="novaDica()">Nova dica 🎲</button>
+  </div>
+</div>
 
-  <!-- HERO STATS -->
+<!-- APP -->
+<div class="app">
   <div class="hero-stats">
-    <div class="hero-stat">
-      <div class="val" id="statJogos">—</div>
-      <div class="lbl">Jogos na Copa</div>
-    </div>
-    <div class="hero-stat">
-      <div class="val" id="statHoje">—</div>
-      <div class="lbl">Jogos Hoje</div>
-    </div>
-    <div class="hero-stat">
-      <div class="val" id="statPalpites">—</div>
-      <div class="lbl">Palpites Registrados</div>
-    </div>
+    <div class="hero-stat"><div class="val" id="statJogos">—</div><div class="lbl">Jogos na Copa</div></div>
+    <div class="hero-stat"><div class="val" id="statHoje">—</div><div class="lbl">Jogos Hoje</div></div>
+    <div class="hero-stat"><div class="val" id="statPalpites">—</div><div class="lbl">Palpites Registrados</div></div>
   </div>
 
-  <!-- TABS -->
   <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('jogos')">📅 Jogos</button>
     <button class="tab-btn" onclick="switchTab('ranking')">🏆 Ranking</button>
     <button class="tab-btn" onclick="switchTab('historico')">📋 Histórico</button>
   </div>
 
-  <!-- TAB: JOGOS -->
   <div class="tab-content active" id="tab-jogos">
     <div class="scoring-legend">
       <div class="scoring-chip"><span class="pts">3 pts</span> Placar exato</div>
       <div class="scoring-chip"><span class="pts">2 pts</span> Vencedor correto</div>
       <div class="scoring-chip"><span class="pts">1 pt</span> Empate correto</div>
     </div>
-    <div id="matchesContainer">
-      <div class="loading"><div class="spinner"></div><br>Carregando jogos...</div>
-    </div>
+    <div id="matchesContainer"><div class="loading"><div class="spinner"></div><br>Carregando jogos...</div></div>
   </div>
 
-  <!-- TAB: RANKING -->
   <div class="tab-content" id="tab-ranking">
-    <div id="rankingContainer">
-      <div class="loading"><div class="spinner"></div><br>Carregando ranking...</div>
-    </div>
+    <div id="rankingContainer"><div class="loading"><div class="spinner"></div><br>Calculando ranking...</div></div>
   </div>
 
-  <!-- TAB: HISTÓRICO -->
   <div class="tab-content" id="tab-historico">
-    <div id="historicoContainer">
-      <div class="empty"><div class="emoji">🗂️</div>Selecione um participante para ver o histórico.</div>
-    </div>
+    <div id="historicoContainer"><div class="empty"><div class="emoji">🗂️</div>Selecione um participante para ver o histórico.</div></div>
   </div>
-
 </div>
 
 <script>
 // ============================================================
-// CONFIGURAÇÃO — HARDCODED
+// CREDENCIAIS
 // ============================================================
-const PLAYERS = ['Leo','Mayra','Caio','Joca','Ronaldo','Maia','Ana','Abel'];
-const PLAYER_LABELS = {'Abel':'Abel (Goleiro 🐱)'};
-const COMPETITION_ID = 2000;
-
-const SB_URL = 'https://hljvcyxckzgsrzdafpcq.supabase.co';
-const SB_KEY = 'sb_publishable_PQ6dP6z_lsr92QRr9YQo_g_5-e_7j4J';
-const FD_KEY = '021f60308fe04a6fac809b8088397666';
-
-let sbClient = null;
-let fdApiKey = FD_KEY;
-let currentPlayer = '';
-let allMatches = [];
-let allPalpites = [];
+var SB_URL  = 'https://hljvcyxckzgsrzdafpcq.supabase.co';
+var SB_KEY  = 'sb_publishable_PQ6dP6z_lsr92QRr9YQo_g_5-e_7j4J';
+var FD_KEY  = '021f60308fe04a6fac809b8088397666';
+var COMP_ID = 2000;
 
 // ============================================================
+// ESTADO
 // ============================================================
-// INICIALIZAÇÃO
+var sbClient       = null;
+var currentPlayer  = '';
+var allMatches     = [];
+var allPalpites    = [];
+var HISTORICO_PTS  = { Leo:71, Mayra:60, Caio:57, Joca:54, Ronaldo:54, Maia:43, Ana:41 };
+
 // ============================================================
-function initSupabase(url, key) {
-  try {
-    const { createClient } = window.supabase;
-    return createClient(url, key);
-  } catch(e) { return null; }
+// DICAS DO ABELÃO
+// ============================================================
+var DICAS = [
+  "Miau! Na Copa, sempre desconfie do favoritão — já vi muito gato escorregando em bola molhada! 🐾",
+  "Dica de goleiro: placar exato vale 3 pontos! Se você acha que vai ser 1x0, arrisque — pode valer a pena! ⚽",
+  "Quando dois gigantes se enfrentam, eu sempre ponho na trave e deixo o empate acontecer. 1 ponto já é 1 ponto!",
+  "Brasil? Coloca 2x1 sempre. Funciona... às vezes. Não me responsabilizo. — Abelão",
+  "O segredo é: assista ao jogo com a camisa do time que você palpitou. Ajuda. Confie no felino! 🏆",
+  "Já defendi muita bola difícil. Empate na fase de grupos? Facilmente. Coloca 0x0 e relaxa.",
+  "Placar exato é raro, mas quando você acerta... 3 pontos direto na gaveta! 🎯",
+  "Olho no histórico recente dos times! Um técnico trocado muda tudo. Abelão pesquisa antes de palpitar.",
+  "Na Copa é assim: o coração grita, a razão sussurra. Ouça os dois — mas vai de razão mesmo! 🧠",
+  "Partidas eliminatórias são diferentes! Times que perdiam na fase de grupos viram campeões. Cuidado!",
+  "Minha dica pro hoje: hidrate-se, analise bem e coloque o palpite antes do apito inicial! ⏰",
+  "Um goleiro sabe: até o último segundo pode mudar tudo. Palpite até o prazo final! 🐱‍💻",
+];
+var dicaIdx = Math.floor(Math.random() * DICAS.length);
+
+function novaDica() {
+  dicaIdx = (dicaIdx + 1) % DICAS.length;
+  document.getElementById('abeldica').textContent = DICAS[dicaIdx];
 }
 
-async function init() {
-  sbClient = initSupabase(SB_URL, SB_KEY);
-  if (!sbClient) {
-    setSyncStatus(false, 'Erro Supabase — verifique a chave');
-    // Ainda carrega jogos mesmo sem Supabase
-    await loadMatches();
-    renderMatches();
-    return;
+// ============================================================
+// INIT
+// ============================================================
+function initApp() {
+  document.getElementById('abeldica').textContent = DICAS[dicaIdx];
+
+  try {
+    sbClient = window.supabase.createClient(SB_URL, SB_KEY);
+  } catch(e) {
+    console.error('Supabase init error:', e);
+    setSyncStatus(false, 'Erro ao iniciar Supabase');
   }
 
-  await Promise.all([loadMatches(), loadAllPalpites()]);
-  renderAll();
-  setSyncStatus(true, 'Atualizado ' + fmtHora(new Date()));
+  loadMatches().then(function() {
+    renderMatches();
+    updateStats();
+  });
 
-  setInterval(async () => {
-    await Promise.all([loadMatches(), loadAllPalpites()]);
-    renderAll();
-    setSyncStatus(true, 'Atualizado ' + fmtHora(new Date()));
+  if (sbClient) {
+    loadAllPalpites().then(function() {
+      renderAll();
+      setSyncStatus(true, 'Atualizado ' + fmtHora(new Date()));
+    });
+  }
+
+  setInterval(function() {
+    loadMatches().then(function() {
+      if (sbClient) loadAllPalpites().then(renderAll);
+      else renderMatches();
+      setSyncStatus(true, 'Atualizado ' + fmtHora(new Date()));
+    });
   }, 15 * 60 * 1000);
 }
 
 // ============================================================
-// FOOTBALL DATA API
+// FOOTBALL DATA API (com fallback de proxies CORS)
 // ============================================================
-async function loadMatches() {
-  const today = new Date();
-  const from = new Date(today); from.setDate(from.getDate() - 3);
-  const to = new Date(today); to.setDate(to.getDate() + 4);
-  const fmt = d => d.toISOString().split('T')[0];
-  const targetUrl = `https://api.football-data.org/v4/competitions/${COMPETITION_ID}/matches?dateFrom=${fmt(from)}&dateTo=${fmt(to)}`;
+function loadMatches() {
+  var today = new Date();
+  var from  = new Date(today); from.setDate(from.getDate() + 0);
+  var to    = new Date(today); to.setDate(to.getDate() + 4);
+  var fmt   = function(d) { return d.toISOString().split('T')[0]; };
+  var apiUrl = 'https://api.football-data.org/v4/competitions/' + COMP_ID + '/matches?dateFrom=' + fmt(from) + '&dateTo=' + fmt(to);
 
-  // Proxies CORS para contornar bloqueio do browser
-  const proxies = [
-    url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-    url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
-    url => `https://thingproxy.freeboard.io/fetch/${url}`,
+  var attempts = [
+    function() {
+      return fetch(apiUrl, { headers: { 'X-Auth-Token': FD_KEY }, signal: AbortSignal.timeout(6000) })
+        .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); });
+    },
+    function() {
+      return fetch('https://corsproxy.io/?' + encodeURIComponent(apiUrl), { signal: AbortSignal.timeout(8000) })
+        .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); });
+    },
+    function() {
+      return fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(apiUrl), { signal: AbortSignal.timeout(8000) })
+        .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+        .then(function(d) { return JSON.parse(d.contents); });
+    }
   ];
 
-  async function tryFetch(proxyFn) {
-    const proxyUrl = proxyFn(targetUrl);
-    const res = await fetch(proxyUrl, {
-      headers: { 'X-Auth-Token': fdApiKey },
-      signal: AbortSignal.timeout(8000)
-    });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const raw = await res.json();
-    // allorigins encapsula em .contents
-    const data = raw.contents ? JSON.parse(raw.contents) : raw;
-    if (!data.matches) throw new Error('Sem matches');
-    return data;
-  }
-
-  // Tentar direto primeiro (funciona se a API liberar CORS), depois proxies
-  const attempts = [
-    () => fetch(targetUrl, { headers: { 'X-Auth-Token': fdApiKey }, signal: AbortSignal.timeout(6000) })
-            .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-            .then(d => { if (!d.matches) throw new Error('sem matches'); return d; }),
-    ...proxies.map(p => () => tryFetch(p))
-  ];
-
-  for (const attempt of attempts) {
-    try {
-      const data = await attempt();
+  function tryNext(i) {
+    if (i >= attempts.length) {
+      allMatches = getMockMatches();
+      setSyncStatus(false, 'API indisponível — modo demo');
+      return Promise.resolve();
+    }
+    return attempts[i]().then(function(data) {
       allMatches = data.matches || [];
-      document.getElementById('statJogos').textContent = data.resultSet?.count || '64';
-      document.getElementById('statHoje').textContent = allMatches.filter(m => {
-        return new Date(m.utcDate).toDateString() === new Date().toDateString();
-      }).length;
-      return;
-    } catch(e) {
-      console.warn('Tentativa falhou:', e.message);
-    }
+      document.getElementById('statJogos').textContent = (data.resultSet && data.resultSet.count) || '64';
+    }).catch(function(e) {
+      console.warn('Tentativa ' + i + ' falhou:', e.message);
+      return tryNext(i + 1);
+    });
   }
 
-  // Todos falharam — usar mock
-  console.error('Todas as tentativas de API falharam');
-  allMatches = getMockMatches();
-  setSyncStatus(false, 'API indisponível — exibindo demo');
+  return tryNext(0);
 }
 
 // ============================================================
-// SUPABASE: PALPITES
+// SUPABASE
 // ============================================================
-async function loadAllPalpites() {
-  if (!sbClient) return;
-  try {
-    const { data, error } = await sbClient
-      .from('palpites')
-      .select('*');
-    if (error) {
-      console.error('Supabase erro:', error.message);
-      if (error.message.includes('does not exist') || error.code === '42P01') {
-        showToast('⚠️ Tabela "palpites" não criada no Supabase ainda.', 'error');
-      } else {
-        showToast('Erro Supabase: ' + error.message, 'error');
-      }
+function loadAllPalpites() {
+  if (!sbClient) return Promise.resolve();
+  return sbClient.from('palpites').select('*').then(function(res) {
+    if (res.error) {
+      console.error('Supabase:', res.error.message);
+      if (res.error.code === '42P01') showToast('Tabela "palpites" não encontrada no Supabase.', 'error');
       return;
     }
-    allPalpites = data || [];
+    allPalpites = res.data || [];
     document.getElementById('statPalpites').textContent = allPalpites.length;
-  } catch(e) {
-    console.error('Palpites error:', e);
-  }
+  });
 }
 
-async function savePalpite(matchId, matchLabel, homeGoals, awayGoals, homeTeam, awayTeam, matchDate) {
-  if (!sbClient) { showToast('Supabase não configurado.', 'error'); return; }
+function savePalpite(matchId, homeGoals, awayGoals, homeTeam, awayTeam, matchDate) {
+  if (!sbClient) { showToast('Supabase não conectado.', 'error'); return; }
   if (!currentPlayer) { showToast('Selecione seu nome primeiro!', 'error'); return; }
-  if (homeGoals === '' || awayGoals === '') { showToast('Preencha o placar do palpite.', 'error'); return; }
+  if (homeGoals === '' || awayGoals === '') { showToast('Preencha o placar completo.', 'error'); return; }
 
-  const record = {
+  var record = {
     player: currentPlayer,
     match_id: String(matchId),
-    match_label: matchLabel,
+    match_label: homeTeam + ' x ' + awayTeam,
     home_team: homeTeam,
     away_team: awayTeam,
     match_date: matchDate,
     home_goals: parseInt(homeGoals),
     away_goals: parseInt(awayGoals),
-    created_at: new Date().toISOString(),
+    created_at: new Date().toISOString()
   };
 
-  try {
-    // Upsert: um palpite por participante por jogo
-    const { error } = await sbClient
-      .from('palpites')
-      .upsert(record, { onConflict: 'player,match_id' });
-    if (error) throw error;
-    showToast(`Palpite ${homeGoals}x${awayGoals} salvo!`, 'success');
-    await loadAllPalpites();
-    renderAll();
-  } catch(e) {
-    console.error(e);
-    showToast('Erro ao salvar: ' + e.message, 'error');
-  }
+  sbClient.from('palpites').upsert(record, { onConflict: 'player,match_id' }).then(function(res) {
+    if (res.error) { showToast('Erro: ' + res.error.message, 'error'); return; }
+    showToast('Palpite ' + homeGoals + 'x' + awayGoals + ' salvo! ✅', 'success');
+    loadAllPalpites().then(renderAll);
+  });
 }
 
 // ============================================================
 // PONTUAÇÃO
 // ============================================================
 function calcPoints(palp, match) {
-  const s = match.score && match.score.fullTime;
-  if (!s || s.home === null || s.away === null) return null; // jogo não encerrado
-  const resReal = Math.sign(s.home - s.away);
-  const resPalp = Math.sign(palp.home_goals - palp.away_goals);
+  var s = match.score && match.score.fullTime;
+  if (!s || s.home === null || s.away === null) return null;
   if (palp.home_goals === s.home && palp.away_goals === s.away) return 3;
+  var resReal = Math.sign(s.home - s.away);
+  var resPalp = Math.sign(palp.home_goals - palp.away_goals);
   if (resReal === resPalp) return (resReal === 0) ? 1 : 2;
   return 0;
 }
 
 function calcRanking() {
-  const pts = {};
-  PLAYERS.forEach(p => pts[p] = { player: p, total: 0, acertos: 0, jogos: 0 });
-
-  allPalpites.forEach(palp => {
-    const match = allMatches.find(m => String(m.id) === String(palp.match_id));
+  var pts = {};
+  ['Leo','Mayra','Caio','Joca','Ronaldo','Maia','Ana'].forEach(function(p) {
+    pts[p] = { player:p, novo:0, acertos:0, jogos:0 };
+  });
+  allPalpites.forEach(function(palp) {
+    var match = allMatches.find(function(m) { return String(m.id) === String(palp.match_id); });
     if (!match) return;
-    const p = calcPoints(palp, match);
+    var p = calcPoints(palp, match);
     if (p === null) return;
-    if (!pts[palp.player]) pts[palp.player] = { player: palp.player, total: 0, acertos: 0, jogos: 0 };
-    pts[palp.player].total += p;
+    if (!pts[palp.player]) pts[palp.player] = { player:palp.player, novo:0, acertos:0, jogos:0 };
+    pts[palp.player].novo += p;
     pts[palp.player].jogos += 1;
     if (p > 0) pts[palp.player].acertos += 1;
   });
-
-  return Object.values(pts).sort((a, b) => b.total - a.total || b.acertos - a.acertos);
+  return Object.values(pts).map(function(r) {
+    r.total = r.novo + (HISTORICO_PTS[r.player] || 0);
+    return r;
+  }).sort(function(a,b) { return b.total - a.total || b.acertos - a.acertos; });
 }
 
 // ============================================================
-// RENDER: MATCHES
+// RENDER
 // ============================================================
 function renderAll() {
   renderMatches();
   renderRanking();
+  updateStats();
   if (currentPlayer) renderHistorico();
 }
 
+function updateStats() {
+  var hoje = allMatches.filter(function(m) {
+    return new Date(m.utcDate).toDateString() === new Date().toDateString();
+  }).length;
+  document.getElementById('statHoje').textContent = hoje;
+}
+
 function renderMatches() {
-  const container = document.getElementById('matchesContainer');
-  if (!allMatches.length) {
-    container.innerHTML = `<div class="empty"><div class="emoji">⚽</div>Nenhum jogo encontrado no período.</div>`;
+  var c = document.getElementById('matchesContainer');
+  if (!allMatches.length) { c.innerHTML = '<div class="empty"><div class="emoji">⚽</div>Nenhum jogo encontrado.</div>'; return; }
+
+  // Exibe apenas jogos não encerrados (agendados, ao vivo, pausados)
+  var matchesVisiveis = allMatches.filter(function(m) {
+    return m.status !== 'FINISHED';
+  });
+
+  if (!matchesVisiveis.length) {
+    c.innerHTML = '<div class="empty"><div class="emoji">⚽</div>Nenhum jogo pendente no momento. Aguarde a próxima rodada!</div>';
     return;
   }
 
-  // Agrupar por data
-  const grouped = {};
-  allMatches.forEach(m => {
-    const d = new Date(m.utcDate);
-    const key = d.toLocaleDateString('pt-BR', { weekday:'long', day:'2-digit', month:'long' });
+  var grouped = {};
+  matchesVisiveis.forEach(function(m) {
+    var d = new Date(m.utcDate);
+    var key = d.toLocaleDateString('pt-BR', { weekday:'long', day:'2-digit', month:'long' });
     if (!grouped[key]) grouped[key] = [];
     grouped[key].push(m);
   });
 
-  let html = '';
-  Object.entries(grouped).forEach(([dateLabel, matches]) => {
-    html += `<div class="section-title">${dateLabel.toUpperCase()}</div>`;
-    matches.forEach(m => {
-      html += renderMatchCard(m);
-    });
+  var html = '';
+  Object.keys(grouped).forEach(function(dateLabel) {
+    html += '<div class="section-title">' + dateLabel.toUpperCase() + '</div>';
+    grouped[dateLabel].forEach(function(m) { html += buildMatchCard(m); });
   });
+  c.innerHTML = html;
 
-  container.innerHTML = html;
-
-  // Bind submit buttons
-  document.querySelectorAll('.btn-palpite').forEach(btn => {
+  document.querySelectorAll('.btn-palpite').forEach(function(btn) {
     var mid = btn.getAttribute('data-mid');
-    btn.onclick = (function(id){
-      return function() { submitPalpite(id); };
-    })(mid);
+    btn.onclick = (function(id) { return function() { submitPalpite(id); }; })(mid);
   });
 }
 
-function renderMatchCard(m) {
-  const homeFlag = flagEmoji(m.homeTeam?.tla || '');
-  const awayFlag = flagEmoji(m.awayTeam?.tla || '');
-  const homeName = m.homeTeam?.shortName || m.homeTeam?.name || 'Casa';
-  const awayName = m.awayTeam?.shortName || m.awayTeam?.name || 'Fora';
-  const d = new Date(m.utcDate);
-  const hora = d.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
-  const s = m.score && m.score.fullTime;
+function buildMatchCard(m) {
+  var homeName = (m.homeTeam && (m.homeTeam.shortName || m.homeTeam.name)) || 'Casa';
+  var awayName = (m.awayTeam && (m.awayTeam.shortName || m.awayTeam.name)) || 'Fora';
+  var homeFlag = flagEmoji(m.homeTeam && m.homeTeam.tla);
+  var awayFlag = flagEmoji(m.awayTeam && m.awayTeam.tla);
+  var d = new Date(m.utcDate);
+  var hora = d.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
+  var s = m.score && m.score.fullTime;
+  var st = m.status;
 
-  let status = '';
-  let scoreHtml = '';
-  const st = m.status;
-
+  var status = '', scoreHtml = '';
   if (st === 'IN_PLAY' || st === 'PAUSED') {
-    status = `<span class="status-live">AO VIVO</span>`;
-    scoreHtml = `<div class="score-box"><div class="score-num">${s?.home ?? 0} <span class="score-sep">×</span> ${s?.away ?? 0}</div><div class="score-label">Em andamento</div></div>`;
+    status = '<span class="status-live">AO VIVO</span>';
+    scoreHtml = '<div class="score-box"><div class="score-num">' + (s && s.home !== null ? s.home : 0) + ' <span class="score-sep">×</span> ' + (s && s.away !== null ? s.away : 0) + '</div><div class="score-label">Em andamento</div></div>';
   } else if (st === 'FINISHED') {
-    status = `<span class="status-ft">ENCERRADO</span>`;
-    scoreHtml = `<div class="score-box"><div class="score-num">${s.home} <span class="score-sep">×</span> ${s.away}</div><div class="score-label">Resultado Final</div></div>`;
+    status = '<span class="status-ft">ENCERRADO</span>';
+    scoreHtml = '<div class="score-box"><div class="score-num">' + s.home + ' <span class="score-sep">×</span> ' + s.away + '</div><div class="score-label">Resultado Final</div></div>';
   } else {
-    status = `<span class="status-ns">${hora}</span>`;
-    scoreHtml = `<div class="score-box"><div class="score-num" style="font-size:18px;color:var(--text-3);">vs</div><div class="score-label">${hora} (horário de Brasília)</div></div>`;
+    status = '<span class="status-ns">' + hora + '</span>';
+    scoreHtml = '<div class="score-box"><div class="score-num" style="font-size:18px;color:var(--text3)">vs</div><div class="score-label">' + hora + ' (Brasília)</div></div>';
   }
 
-  // Palpite existente deste player para este jogo
-  const existingPalp = currentPlayer ? allPalpites.find(p => p.player === currentPlayer && String(p.match_id) === String(m.id)) : null;
-  let palpiteHtml = '';
-  let palpPtsHtml = '';
+  var existingPalp = currentPlayer ? allPalpites.find(function(p) { return p.player === currentPlayer && String(p.match_id) === String(m.id); }) : null;
+  var palpiteHtml = '';
 
-  if (st === 'FINISHED' && existingPalp) {
-    const pts = calcPoints(existingPalp, m);
-    const ptsClass = pts === 3 ? 'pts-3' : pts === 2 ? 'pts-2' : pts === 1 ? 'pts-1' : 'pts-0';
-    const ptsLabel = pts === 3 ? '🎯 Placar exato!' : pts === 2 ? '✅ Vencedor correto' : pts === 1 ? '🤝 Empate correto' : '❌ Errou';
-    palpPtsHtml = `<div class="pts-chip ${ptsClass}" style="font-size:13px;padding:4px 12px;">${ptsLabel} · <strong>+${pts} pts</strong></div>`;
-  }
-
-  if (currentPlayer && st !== 'FINISHED') {
-    const existVal = existingPalp ? `value="${existingPalp.home_goals}"` : '';
-    const existValA = existingPalp ? `value="${existingPalp.away_goals}"` : '';
+  if (st === 'FINISHED') {
     if (existingPalp) {
-      palpiteHtml = `
-        <div class="palpite-section">
-          <div class="palpite-existing">✅ Seu palpite: ${existingPalp.home_goals}×${existingPalp.away_goals} — você pode alterar até o início do jogo</div>
-          <label>Alterar palpite</label>
-          <div class="palpite-grid">
-            <input class="palpite-score-in" type="number" min="0" max="20" id="h-${m.id}" ${existVal} placeholder="0">
-            <div class="palpite-sep">×</div>
-            <input class="palpite-score-in" type="number" min="0" max="20" id="a-${m.id}" ${existValA} placeholder="0">
-          </div>
-          <button class="btn-submit btn-palpite" data-mid="${m.id}">Atualizar Palpite</button>
-        </div>`;
+      var pts = calcPoints(existingPalp, m);
+      var ptsClass = pts === 3 ? 'pts-3' : pts === 2 ? 'pts-2' : pts === 1 ? 'pts-1' : 'pts-0';
+      var ptsLabel = pts === 3 ? '🎯 Placar exato!' : pts === 2 ? '✅ Vencedor correto' : pts === 1 ? '🤝 Empate correto' : '❌ Errou';
+      palpiteHtml = '<div class="palpite-section"><label>Seu palpite</label><div style="display:flex;align-items:center;gap:12px"><span style="font-size:20px;font-weight:800;color:var(--text2)">' + existingPalp.home_goals + ' × ' + existingPalp.away_goals + '</span><span class="pts-chip ' + ptsClass + '" style="font-size:13px;padding:4px 12px">' + ptsLabel + ' · +' + pts + ' pts</span></div></div>';
     } else {
-      palpiteHtml = `
-        <div class="palpite-section">
-          <label>Seu palpite</label>
-          <div class="palpite-grid">
-            <input class="palpite-score-in" type="number" min="0" max="20" id="h-${m.id}" placeholder="0">
-            <div class="palpite-sep">×</div>
-            <input class="palpite-score-in" type="number" min="0" max="20" id="a-${m.id}" placeholder="0">
-          </div>
-          <button class="btn-submit btn-palpite" data-mid="${m.id}">Enviar Palpite</button>
-        </div>`;
+      palpiteHtml = '<div class="palpite-section" style="color:var(--text3);font-size:12px">Nenhum palpite registrado.</div>';
     }
-  } else if (!currentPlayer && st !== 'FINISHED') {
-    palpiteHtml = `<div class="palpite-section" style="color:var(--text-3);font-size:12px;">Selecione seu nome para fazer um palpite.</div>`;
-  } else if (st === 'FINISHED' && !existingPalp) {
-    palpiteHtml = `<div class="palpite-section" style="color:var(--text-3);font-size:12px;">Nenhum palpite registrado para este jogo.</div>`;
-  } else if (st === 'FINISHED' && existingPalp) {
-    palpiteHtml = `<div class="palpite-section">
-      <label>Seu palpite</label>
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
-        <span style="font-size:20px;font-weight:800;color:var(--text-2)">${existingPalp.home_goals} × ${existingPalp.away_goals}</span>
-        ${palpPtsHtml}
-      </div>
-    </div>`;
+  } else if (!currentPlayer) {
+    palpiteHtml = '<div class="palpite-section" style="color:var(--text3);font-size:12px">Selecione seu nome para palpitar.</div>';
+  } else {
+    var existHtml = existingPalp ? '<div class="palpite-existing">✅ Palpite atual: ' + existingPalp.home_goals + '×' + existingPalp.away_goals + ' — você pode alterar até o início</div>' : '';
+    var btnLabel = existingPalp ? 'Atualizar Palpite' : 'Enviar Palpite';
+    var vH = existingPalp ? existingPalp.home_goals : '';
+    var vA = existingPalp ? existingPalp.away_goals : '';
+    palpiteHtml = '<div class="palpite-section">' + existHtml + '<label>Seu palpite</label><div class="palpite-grid"><input class="palpite-score-in" type="number" min="0" max="20" id="h-' + m.id + '" value="' + vH + '" placeholder="0"><div class="palpite-sep">×</div><input class="palpite-score-in" type="number" min="0" max="20" id="a-' + m.id + '" value="' + vA + '" placeholder="0"></div><button class="btn-submit btn-palpite" data-mid="' + m.id + '">' + btnLabel + '</button></div>';
   }
 
-  const round = m.stage ? m.stage.replace(/_/g,' ') : 'Fase de Grupos';
-  const group = m.group ? ` · ${m.group}` : '';
+  var round = (m.stage || 'Fase de Grupos').replace(/_/g,' ');
+  var group = m.group ? ' · ' + m.group : '';
 
-  return `
-    <div class="match-card">
-      <div class="match-header">
-        <span>${round}${group}</span>
-        ${status}
-      </div>
-      <div class="match-body">
-        <div class="team-home">
-          <span class="team-flag">${homeFlag}</span>
-          <div class="team-name">${homeName}</div>
-        </div>
-        ${scoreHtml}
-        <div class="team-away">
-          <span class="team-flag">${awayFlag}</span>
-          <div class="team-name">${awayName}</div>
-        </div>
-      </div>
-      ${palpiteHtml}
-    </div>`;
+  return '<div class="match-card"><div class="match-header"><span>' + round + group + '</span>' + status + '</div><div class="match-body"><div class="team-home"><span class="team-flag">' + homeFlag + '</span><div class="team-name">' + homeName + '</div></div>' + scoreHtml + '<div class="team-away"><span class="team-flag">' + awayFlag + '</span><div class="team-name">' + awayName + '</div></div></div>' + palpiteHtml + '</div>';
 }
 
-// ============================================================
-// RENDER: RANKING
-// ============================================================
+function submitPalpite(matchId) {
+  var hEl = document.getElementById('h-' + matchId);
+  var aEl = document.getElementById('a-' + matchId);
+  if (!hEl || !aEl) return;
+  var match = allMatches.find(function(m) { return String(m.id) === String(matchId); });
+  if (!match) return;
+  var home = (match.homeTeam && match.homeTeam.shortName) || 'Casa';
+  var away = (match.awayTeam && match.awayTeam.shortName) || 'Fora';
+  savePalpite(matchId, hEl.value, aEl.value, home, away, match.utcDate);
+}
+
 function renderRanking() {
-  const ranking = calcRanking();
-  const maxPts = ranking[0]?.total || 1;
-
-  // Pegar pontos históricos (da imagem) como fallback se não há palpites calculados
-  const historico = { Leo: 71, Mayra: 60, Caio: 57, Joca: 54, Ronaldo: 54, Maia: 43, Ana: 41, Abel: 0 };
-
-  let html = '<div class="card"><div class="card-header">Classificação <span class="badge">GERAL</span></div><div class="card-body">';
-
-  ranking.forEach((r, i) => {
-    const posClass = i === 0 ? 'p1' : i === 1 ? 'p2' : i === 2 ? 'p3' : 'other';
-    const pct = maxPts > 0 ? Math.round((r.total / maxPts) * 100) : 0;
-    const hist = historico[r.player] || 0;
-    const total = r.total + hist;
-    const label = PLAYER_LABELS[r.player] || r.player;
-    html += `
-      <div class="ranking-item">
-        <div class="rank-pos ${posClass}">${i+1}</div>
-        <div style="flex:1">
-          <div class="rank-name">${label}</div>
-          <div style="font-size:11px;color:var(--text-3)">${r.jogos} palpite(s) pontuado(s) · ${r.acertos} acerto(s)</div>
-          <div class="rank-progress"><div class="rank-progress-bar" style="width:${pct}%"></div></div>
-        </div>
-        <div>
-          <div class="rank-pts">${total}</div>
-          <div class="rank-pts-label">PONTOS</div>
-        </div>
-      </div>`;
+  var ranking = calcRanking();
+  var maxPts = ranking[0] ? ranking[0].total : 1;
+  var html = '<div class="card"><div class="card-header">Classificação <span class="badge">GERAL</span></div><div class="card-body">';
+  ranking.forEach(function(r, i) {
+    var posClass = i === 0 ? 'p1' : i === 1 ? 'p2' : i === 2 ? 'p3' : 'other';
+    var pct = maxPts > 0 ? Math.round((r.total / maxPts) * 100) : 0;
+    html += '<div class="ranking-item"><div class="rank-pos ' + posClass + '">' + (i+1) + '</div><div style="flex:1"><div class="rank-name">' + r.player + '</div><div style="font-size:11px;color:var(--text3)">' + r.jogos + ' palpite(s) · ' + r.acertos + ' acerto(s) neste sistema</div><div class="rank-progress"><div class="rank-progress-bar" style="width:' + pct + '%"></div></div></div><div><div class="rank-pts">' + r.total + '</div><div class="rank-pts-label">PONTOS</div></div></div>';
   });
-
   html += '</div></div>';
   document.getElementById('rankingContainer').innerHTML = html;
 }
 
-// ============================================================
-// RENDER: HISTÓRICO
-// ============================================================
 function renderHistorico() {
   if (!currentPlayer) return;
-  const meusPalpites = allPalpites.filter(p => p.player === currentPlayer);
-
-  if (!meusPalpites.length) {
-    document.getElementById('historicoContainer').innerHTML = `<div class="empty"><div class="emoji">📝</div>Nenhum palpite registrado ainda.</div>`;
-    return;
-  }
-
-  let html = `<table class="hist-table">
-    <thead><tr>
-      <th>Jogo</th><th>Data</th><th>Seu Palpite</th><th>Resultado</th><th>Pontos</th>
-    </tr></thead><tbody>`;
-
-  meusPalpites.forEach(p => {
-    const match = allMatches.find(m => String(m.id) === String(p.match_id));
-    const s = match && match.score && match.score.fullTime;
-    const finished = match && match.status === 'FINISHED';
-    const pts = finished ? calcPoints(p, match) : null;
-    const ptsClass = pts === 3 ? 'pts-3' : pts === 2 ? 'pts-2' : pts === 1 ? 'pts-1' : pts === 0 ? 'pts-0' : '';
-    const ptsLabel = pts === null ? '—' : `+${pts}`;
-    const resultado = finished && s ? `${s.home}×${s.away}` : '—';
-    const d = new Date(p.match_date || (match && match.utcDate) || '');
-    const dateStr = isNaN(d) ? '—' : d.toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit'});
-
-    html += `<tr>
-      <td style="font-weight:600">${p.home_team || '?'} × ${p.away_team || '?'}</td>
-      <td style="color:var(--text-3)">${dateStr}</td>
-      <td><strong>${p.home_goals}×${p.away_goals}</strong></td>
-      <td style="color:var(--text-3)">${resultado}</td>
-      <td>${pts !== null ? `<span class="pts-chip ${ptsClass}">${ptsLabel}</span>` : '<span style="color:var(--text-3);font-size:12px">pendente</span>'}</td>
-    </tr>`;
+  var meusPalpites = allPalpites.filter(function(p) { return p.player === currentPlayer; });
+  if (!meusPalpites.length) { document.getElementById('historicoContainer').innerHTML = '<div class="empty"><div class="emoji">📝</div>Nenhum palpite registrado ainda.</div>'; return; }
+  var html = '<table class="hist-table"><thead><tr><th>Jogo</th><th>Data</th><th>Palpite</th><th>Resultado</th><th>Pts</th></tr></thead><tbody>';
+  meusPalpites.forEach(function(p) {
+    var match = allMatches.find(function(m) { return String(m.id) === String(p.match_id); });
+    var s = match && match.score && match.score.fullTime;
+    var finished = match && match.status === 'FINISHED';
+    var pts = finished ? calcPoints(p, match) : null;
+    var ptsClass = pts === 3 ? 'pts-3' : pts === 2 ? 'pts-2' : pts === 1 ? 'pts-1' : 'pts-0';
+    var resultado = (finished && s) ? s.home + '×' + s.away : '—';
+    var d = new Date(p.match_date || (match && match.utcDate) || '');
+    var dateStr = isNaN(d) ? '—' : d.toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit'});
+    html += '<tr><td style="font-weight:600">' + (p.home_team||'?') + ' × ' + (p.away_team||'?') + '</td><td style="color:var(--text3)">' + dateStr + '</td><td><strong>' + p.home_goals + '×' + p.away_goals + '</strong></td><td style="color:var(--text3)">' + resultado + '</td><td>' + (pts !== null ? '<span class="pts-chip ' + ptsClass + '">+' + pts + '</span>' : '<span style="color:var(--text3);font-size:12px">pendente</span>') + '</td></tr>';
   });
-
   html += '</tbody></table>';
   document.getElementById('historicoContainer').innerHTML = html;
 }
 
 // ============================================================
-// SUBMIT PALPITE
-// ============================================================
-function submitPalpite(matchId) {
-  const hEl = document.getElementById('h-' + matchId);
-  const aEl = document.getElementById('a-' + matchId);
-  if (!hEl || !aEl) return;
-  const h = hEl.value;
-  const a = aEl.value;
-  if (h === '' || a === '') { showToast('Preencha o placar completo.', 'error'); return; }
-  const match = allMatches.find(m => String(m.id) === String(matchId));
-  if (!match) return;
-  const home = match.homeTeam?.shortName || 'Casa';
-  const away = match.awayTeam?.shortName || 'Fora';
-  const lbl = `${home} × ${away}`;
-  savePalpite(matchId, lbl, h, a, home, away, match.utcDate);
-}
-
-// ============================================================
-// PLAYER CHANGE
+// UTILS
 // ============================================================
 function onPlayerChange() {
   currentPlayer = document.getElementById('playerSelect').value;
-  const badge = document.getElementById('playerPtsBadge');
+  var badge = document.getElementById('playerPtsBadge');
   if (currentPlayer) {
     badge.style.display = 'block';
-    const ranking = calcRanking();
-    const r = ranking.find(x => x.player === currentPlayer);
-    const hist = { Leo: 71, Mayra: 60, Caio: 57, Joca: 54, Ronaldo: 54, Maia: 43, Ana: 41, Abel: 0 };
-    document.getElementById('playerPtsVal').textContent = (r?.total || 0) + (hist[currentPlayer] || 0);
+    var ranking = calcRanking();
+    var r = ranking.find(function(x) { return x.player === currentPlayer; });
+    document.getElementById('playerPtsVal').textContent = r ? r.total : 0;
   } else {
     badge.style.display = 'none';
   }
   renderAll();
-  if (currentPlayer) renderHistorico();
 }
 
-// ============================================================
-// TABS
-// ============================================================
 function switchTab(name) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-  const tabs = { jogos: 0, ranking: 1, historico: 2 };
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+  var tabs = { jogos:0, ranking:1, historico:2 };
   document.querySelectorAll('.tab-btn')[tabs[name]].classList.add('active');
   document.getElementById('tab-' + name).classList.add('active');
   if (name === 'ranking') renderRanking();
   if (name === 'historico') renderHistorico();
 }
 
-// ============================================================
-// UTILS
-// ============================================================
 function setSyncStatus(ok, label) {
-  const dot = document.getElementById('syncDot');
-  const lbl = document.getElementById('syncLabel');
+  var dot = document.getElementById('syncDot');
+  var lbl = document.getElementById('syncLabel');
   dot.className = 'sync-dot ' + (ok ? 'ok' : 'err');
   lbl.textContent = label;
 }
 
-function fmtHora(d) {
-  return d.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
-}
+function fmtHora(d) { return d.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' }); }
 
 function showToast(msg, type) {
-  const t = document.getElementById('toast');
+  var t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast show ' + (type || '');
-  setTimeout(() => t.className = 'toast', 3000);
+  setTimeout(function() { t.className = 'toast'; }, 3500);
 }
 
 function flagEmoji(tla) {
-  const flags = {
-    BRA:'🇧🇷',ARG:'🇦🇷',FRA:'🇫🇷',ENG:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',GER:'🇩🇪',ESP:'🇪🇸',POR:'🇵🇹',ITA:'🇮🇹',
-    URU:'🇺🇾',COL:'🇨🇴',MEX:'🇲🇽',USA:'🇺🇸',CAN:'🇨🇦',JPN:'🇯🇵',KOR:'🇰🇷',AUS:'🇦🇺',
-    NED:'🇳🇱',BEL:'🇧🇪',CRO:'🇭🇷',SEN:'🇸🇳',MAR:'🇲🇦',GHA:'🇬🇭',NGA:'🇳🇬',ECU:'🇪🇨',
-    SUI:'🇨🇭',POL:'🇵🇱',DEN:'🇩🇰',WAL:'🏴󠁧󠁢󠁷󠁬󠁳󠁿',SCO:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',SVK:'🇸🇰',CZE:'🇨🇿',SVN:'🇸🇮',
-    SRB:'🇷🇸',HUN:'🇭🇺',ROU:'🇷🇴',UKR:'🇺🇦',TUR:'🇹🇷',GRE:'🇬🇷',PAN:'🇵🇦',CRC:'🇨🇷',
-    HON:'🇭🇳',SLV:'🇸🇻',GUA:'🇬🇹',HAI:'🇭🇹',JAM:'🇯🇲',TRI:'🇹🇹',VEN:'🇻🇪',PER:'🇵🇪',
-    CHI:'🇨🇱',BOL:'🇧🇴',PAR:'🇵🇾',IRI:'🇮🇷',JOR:'🇯🇴',SAU:'🇸🇦',QAT:'🇶🇦',UAE:'🇦🇪',
-    IRQ:'🇮🇶',SYR:'🇸🇾',UZB:'🇺🇿',TJK:'🇹🇯',TKM:'🇹🇲',CMR:'🇨🇲',EGY:'🇪🇬',ALG:'🇩🇿',
-    TUN:'🇹🇳',MLI:'🇲🇱',BFA:'🇧🇫',ZIM:'🇿🇼',ZAM:'🇿🇲',TAN:'🇹🇿',UGA:'🇺🇬',KEN:'🇰🇪',
-    CIV:'🇨🇮',GUI:'🇬🇳',GAB:'🇬🇦',COD:'🇨🇩',ANG:'🇦🇴',MOZ:'🇲🇿',NZL:'🇳🇿',PNG:'🇵🇬',
-    FIJ:'🇫🇯',VAN:'🇻🇺',NCL:'🇳🇨',PHP:'🇵🇭',THA:'🇹🇭',VNM:'🇻🇳',IDN:'🇮🇩',MYS:'🇲🇾',
-    SIN:'🇸🇬',IND:'🇮🇳',PAK:'🇵🇰',BAN:'🇧🇩',SRL:'🇱🇰',NEP:'🇳🇵',CHN:'🇨🇳'
-  };
+  var flags = { BRA:'🇧🇷',ARG:'🇦🇷',FRA:'🇫🇷',ENG:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',GER:'🇩🇪',ESP:'🇪🇸',POR:'🇵🇹',ITA:'🇮🇹',URU:'🇺🇾',COL:'🇨🇴',MEX:'🇲🇽',USA:'🇺🇸',CAN:'🇨🇦',JPN:'🇯🇵',KOR:'🇰🇷',AUS:'🇦🇺',NED:'🇳🇱',BEL:'🇧🇪',CRO:'🇭🇷',SEN:'🇸🇳',MAR:'🇲🇦',GHA:'🇬🇭',NGA:'🇳🇬',ECU:'🇪🇨',SUI:'🇨🇭',POL:'🇵🇱',DEN:'🇩🇰',WAL:'🏴󠁧󠁢󠁷󠁬󠁳󠁿',SCO:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',SVK:'🇸🇰',CZE:'🇨🇿',SVN:'🇸🇮',SRB:'🇷🇸',HUN:'🇭🇺',ROU:'🇷🇴',UKR:'🇺🇦',TUR:'🇹🇷',GRE:'🇬🇷',PAN:'🇵🇦',CRC:'🇨🇷',VEN:'🇻🇪',PER:'🇵🇪',CHI:'🇨🇱',BOL:'🇧🇴',PAR:'🇵🇾',IRI:'🇮🇷',SAU:'🇸🇦',QAT:'🇶🇦',EGY:'🇪🇬',ALG:'🇩🇿',TUN:'🇹🇳',CMR:'🇨🇲',CIV:'🇨🇮',NZL:'🇳🇿',CHN:'🇨🇳' };
   return flags[tla] || '🏳️';
 }
 
-// Mock para quando API falha
 function getMockMatches() {
-  const today = new Date().toISOString();
+  var t = new Date().toISOString();
   return [
-    {
-      id: 9001, utcDate: today, status: 'SCHEDULED', stage: 'GROUP_STAGE', group: 'Group A',
-      homeTeam: { name: 'Brasil', shortName: 'Brasil', tla: 'BRA' },
-      awayTeam: { name: 'Argentina', shortName: 'Argentina', tla: 'ARG' },
-      score: { fullTime: { home: null, away: null } }
-    },
-    {
-      id: 9002, utcDate: today, status: 'FINISHED', stage: 'GROUP_STAGE', group: 'Group B',
-      homeTeam: { name: 'França', shortName: 'França', tla: 'FRA' },
-      awayTeam: { name: 'Inglaterra', shortName: 'Inglaterra', tla: 'ENG' },
-      score: { fullTime: { home: 2, away: 1 } }
-    },
-    {
-      id: 9003, utcDate: today, status: 'IN_PLAY', stage: 'GROUP_STAGE', group: 'Group C',
-      homeTeam: { name: 'Espanha', shortName: 'Espanha', tla: 'ESP' },
-      awayTeam: { name: 'Portugal', shortName: 'Portugal', tla: 'POR' },
-      score: { fullTime: { home: 1, away: 0 } }
-    }
+    { id:9001, utcDate:t, status:'SCHEDULED', stage:'GROUP_STAGE', group:'Group A', homeTeam:{name:'Brasil',shortName:'Brasil',tla:'BRA'}, awayTeam:{name:'Argentina',shortName:'Argentina',tla:'ARG'}, score:{fullTime:{home:null,away:null}} },
+    { id:9002, utcDate:t, status:'FINISHED',  stage:'GROUP_STAGE', group:'Group B', homeTeam:{name:'França',shortName:'França',tla:'FRA'},   awayTeam:{name:'Inglaterra',shortName:'Inglaterra',tla:'ENG'}, score:{fullTime:{home:2,away:1}} },
+    { id:9003, utcDate:t, status:'IN_PLAY',   stage:'GROUP_STAGE', group:'Group C', homeTeam:{name:'Espanha',shortName:'Espanha',tla:'ESP'}, awayTeam:{name:'Portugal',shortName:'Portugal',tla:'POR'}, score:{fullTime:{home:1,away:0}} }
   ];
 }
 
-// ============================================================
 // START
-// ============================================================
-init();
+initApp();
 </script>
-
-<!--
-=================================================================
-📋 README — INSTRUÇÕES DE CONFIGURAÇÃO
-=================================================================
-
-1. SUPABASE — criar tabela "palpites":
-   Acesse app.supabase.com → SQL Editor → Execute:
-
-   CREATE TABLE palpites (
-     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-     player TEXT NOT NULL,
-     match_id TEXT NOT NULL,
-     match_label TEXT,
-     home_team TEXT,
-     away_team TEXT,
-     match_date TIMESTAMPTZ,
-     home_goals INTEGER NOT NULL,
-     away_goals INTEGER NOT NULL,
-     created_at TIMESTAMPTZ DEFAULT NOW(),
-     UNIQUE(player, match_id)
-   );
-
-   ALTER TABLE palpites ENABLE ROW LEVEL SECURITY;
-   CREATE POLICY "public_read" ON palpites FOR SELECT USING (true);
-   CREATE POLICY "public_insert" ON palpites FOR INSERT WITH CHECK (true);
-   CREATE POLICY "public_update" ON palpites FOR UPDATE USING (true);
-
-2. FOOTBALL-DATA.ORG:
-   - Cadastre em https://www.football-data.org/client/register
-   - Plano Free: 10 req/min (suficiente com atualização a cada 15 min)
-   - Copa 2026 = Competition ID 2000
-
-3. DEPLOY:
-   - Salve este arquivo como index.html
-   - Suba para GitHub Pages, Netlify ou qualquer hosting estático
-   - NÃO é necessário servidor backend
-
-4. ACESSO:
-   - Compartilhe o link com os participantes
-   - Cada um seleciona o nome na lista suspensa
-   - Palpites são salvos em tempo real no Supabase
-   - Ranking atualiza automaticamente a cada 15 minutos
-
-=================================================================
--->
 </body>
 </html>
