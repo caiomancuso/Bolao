@@ -451,8 +451,8 @@ function renderMatches() {
 }
 
 function buildMatchCard(m) {
-  var homeName = (m.homeTeam && (m.homeTeam.shortName || m.homeTeam.name)) || 'Casa';
-  var awayName = (m.awayTeam && (m.awayTeam.shortName || m.awayTeam.name)) || 'Fora';
+  var homeName = teamName(m.homeTeam);
+  var awayName = teamName(m.awayTeam);
   var homeFlag = flagEmoji(m.homeTeam && m.homeTeam.tla);
   var awayFlag = flagEmoji(m.awayTeam && m.awayTeam.tla);
   var d = new Date(m.utcDate);
@@ -494,8 +494,9 @@ function buildMatchCard(m) {
     palpiteHtml = '<div class="palpite-section">' + existHtml + '<label>Seu palpite</label><div class="palpite-grid"><input class="palpite-score-in" type="number" min="0" max="20" id="h-' + m.id + '" value="' + vH + '" placeholder="0"><div class="palpite-sep">×</div><input class="palpite-score-in" type="number" min="0" max="20" id="a-' + m.id + '" value="' + vA + '" placeholder="0"></div><button class="btn-submit btn-palpite" data-mid="' + m.id + '">' + btnLabel + '</button></div>';
   }
 
-  var round = (m.stage || 'Fase de Grupos').replace(/_/g,' ');
-  var group = m.group ? ' · ' + m.group : '';
+  var round = (m.stage || 'GROUP_STAGE').replace('GROUP_STAGE','Fase de Grupos').replace('ROUND_OF_16','Oitavas de Final').replace('QUARTER_FINALS','Quartas de Final').replace('SEMI_FINALS','Semifinal').replace('FINAL','Final').replace(/_/g,' ');
+  var group = m.group ? ' · ' + m.group.replace('Group ','Grupo ') : '';
+
 
   return '<div class="match-card"><div class="match-header"><span>' + round + group + '</span>' + status + '</div><div class="match-body"><div class="team-home"><div class="team-name">' + homeName + ' <span class="team-flag">' + homeFlag + '</span></div></div>' + scoreHtml + '<div class="team-away"><div class="team-name"><span class="team-flag">' + awayFlag + '</span> ' + awayName + '</div></div></div>' + palpiteHtml + '</div>';
 }
@@ -506,8 +507,8 @@ function submitPalpite(matchId) {
   if (!hEl || !aEl) return;
   var match = allMatches.find(function(m) { return String(m.id) === String(matchId); });
   if (!match) return;
-  var home = (match.homeTeam && match.homeTeam.shortName) || 'Casa';
-  var away = (match.awayTeam && match.awayTeam.shortName) || 'Fora';
+  var home = teamName(match.homeTeam);
+  var away = teamName(match.awayTeam);
   savePalpite(matchId, hEl.value, aEl.value, home, away, match.utcDate);
 }
 
@@ -588,8 +589,57 @@ function showToast(msg, type) {
 }
 
 function flagEmoji(tla) {
-  var flags = { BRA:'🇧🇷',ARG:'🇦🇷',FRA:'🇫🇷',ENG:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',GER:'🇩🇪',ESP:'🇪🇸',POR:'🇵🇹',ITA:'🇮🇹',URU:'🇺🇾',COL:'🇨🇴',MEX:'🇲🇽',USA:'🇺🇸',CAN:'🇨🇦',JPN:'🇯🇵',KOR:'🇰🇷',AUS:'🇦🇺',NED:'🇳🇱',BEL:'🇧🇪',CRO:'🇭🇷',SEN:'🇸🇳',MAR:'🇲🇦',GHA:'🇬🇭',NGA:'🇳🇬',ECU:'🇪🇨',SUI:'🇨🇭',POL:'🇵🇱',DEN:'🇩🇰',WAL:'🏴󠁧󠁢󠁷󠁬󠁳󠁿',SCO:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',SVK:'🇸🇰',CZE:'🇨🇿',SVN:'🇸🇮',SRB:'🇷🇸',HUN:'🇭🇺',ROU:'🇷🇴',UKR:'🇺🇦',TUR:'🇹🇷',GRE:'🇬🇷',PAN:'🇵🇦',CRC:'🇨🇷',VEN:'🇻🇪',PER:'🇵🇪',CHI:'🇨🇱',BOL:'🇧🇴',PAR:'🇵🇾',IRI:'🇮🇷',SAU:'🇸🇦',QAT:'🇶🇦',EGY:'🇪🇬',ALG:'🇩🇿',TUN:'🇹🇳',CMR:'🇨🇲',CIV:'🇨🇮',NZL:'🇳🇿',CHN:'🇨🇳' };
-  return flags[tla] || '🏳️';
+  if (!tla) return '🏳️';
+  var flags = {
+    BRA:'🇧🇷',ARG:'🇦🇷',FRA:'🇫🇷',ENG:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',GER:'🇩🇪',ESP:'🇪🇸',POR:'🇵🇹',ITA:'🇮🇹',
+    URU:'🇺🇾',COL:'🇨🇴',MEX:'🇲🇽',USA:'🇺🇸',CAN:'🇨🇦',JPN:'🇯🇵',KOR:'🇰🇷',AUS:'🇦🇺',
+    NED:'🇳🇱',BEL:'🇧🇪',CRO:'🇭🇷',SEN:'🇸🇳',MAR:'🇲🇦',GHA:'🇬🇭',NGA:'🇳🇬',ECU:'🇪🇨',
+    SUI:'🇨🇭',POL:'🇵🇱',DEN:'🇩🇰',WAL:'🏴󠁧󠁢󠁷󠁬󠁳󠁿',SCO:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',SVK:'🇸🇰',CZE:'🇨🇿',SVN:'🇸🇮',
+    SRB:'🇷🇸',HUN:'🇭🇺',ROU:'🇷🇴',UKR:'🇺🇦',TUR:'🇹🇷',GRE:'🇬🇷',PAN:'🇵🇦',CRC:'🇨🇷',
+    VEN:'🇻🇪',PER:'🇵🇪',CHI:'🇨🇱',BOL:'🇧🇴',PAR:'🇵🇾',IRI:'🇮🇷',SAU:'🇸🇦',QAT:'🇶🇦',
+    EGY:'🇪🇬',ALG:'🇩🇿',TUN:'🇹🇳',CMR:'🇨🇲',CIV:'🇨🇮',NZL:'🇳🇿',CHN:'🇨🇳',
+    MAL:'🇲🇾',RSA:'🇿🇦',ZIM:'🇿🇼',ZAM:'🇿🇲',ANG:'🇦🇴',MOZ:'🇲🇿',MLI:'🇲🇱',
+    GUI:'🇬🇳',SLE:'🇸🇱',BEN:'🇧🇯',BFA:'🇧🇫',TOG:'🇹🇬',GAB:'🇬🇦',COD:'🇨🇩',
+    UGA:'🇺🇬',KEN:'🇰🇪',TAN:'🇹🇿',ETH:'🇪🇹',SOM:'🇸🇴',LBA:'🇱🇾',SDN:'🇸🇩',
+    JOR:'🇯🇴',UAE:'🇦🇪',IRQ:'🇮🇶',SYR:'🇸🇾',LBN:'🇱🇧',YEM:'🇾🇪',OMA:'🇴🇲',
+    KWT:'🇰🇼',BHR:'🇧🇭',UZB:'🇺🇿',KAZ:'🇰🇿',TJK:'🇹🇯',TKM:'🇹🇲',KGZ:'🇰🇬',
+    IND:'🇮🇳',PAK:'🇵🇰',BGD:'🇧🇩',SRI:'🇱🇰',NEP:'🇳🇵',MYA:'🇲🇲',THA:'🇹🇭',
+    VNM:'🇻🇳',IDN:'🇮🇩',PHI:'🇵🇭',FIJ:'🇫🇯',PNG:'🇵🇬',SOL:'🇸🇧',VAN:'🇻🇺',
+    HON:'🇭🇳',SLV:'🇸🇻',GUA:'🇬🇹',HAI:'🇭🇹',JAM:'🇯🇲',TRI:'🇹🇹',CUB:'🇨🇺',
+    DOM:'🇩🇴',PUR:'🇵🇷',NCA:'🇳🇮',BLZ:'🇧🇿',CUW:'🇨🇼',
+    SVN:'🇸🇮',BIH:'🇧🇦',MKD:'🇲🇰',ALB:'🇦🇱',MNE:'🇲🇪',KOS:'🇽🇰',
+    FIN:'🇫🇮',NOR:'🇳🇴',SWE:'🇸🇪',ISL:'🇮🇸',IRL:'🇮🇪',SCT:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',
+    RUS:'🇷🇺',BLR:'🇧🇾',LTU:'🇱🇹',LAT:'🇱🇻',EST:'🇪🇪',MDA:'🇲🇩',GEO:'🇬🇪',ARM:'🇦🇲',AZE:'🇦🇿'
+  };
+  return flags[tla.toUpperCase()] || '🏳️';
+}
+
+// Nomes dos países em português
+var NOMES_PT = {
+  BRA:'Brasil',ARG:'Argentina',FRA:'França',ENG:'Inglaterra',GER:'Alemanha',ESP:'Espanha',
+  POR:'Portugal',ITA:'Itália',URU:'Uruguai',COL:'Colômbia',MEX:'México',USA:'Estados Unidos',
+  CAN:'Canadá',JPN:'Japão',KOR:'Coreia do Sul',AUS:'Austrália',NED:'Holanda',BEL:'Bélgica',
+  CRO:'Croácia',SEN:'Senegal',MAR:'Marrocos',GHA:'Gana',NGA:'Nigéria',ECU:'Equador',
+  SUI:'Suíça',POL:'Polônia',DEN:'Dinamarca',WAL:'País de Gales',SCO:'Escócia',SVK:'Eslováquia',
+  CZE:'República Tcheca',SVN:'Eslovênia',SRB:'Sérvia',HUN:'Hungria',ROU:'Romênia',
+  UKR:'Ucrânia',TUR:'Turquia',GRE:'Grécia',PAN:'Panamá',CRC:'Costa Rica',VEN:'Venezuela',
+  PER:'Peru',CHI:'Chile',BOL:'Bolívia',PAR:'Paraguai',IRI:'Irã',SAU:'Arábia Saudita',
+  QAT:'Catar',EGY:'Egito',ALG:'Argélia',TUN:'Tunísia',CMR:'Camarões',CIV:'Costa do Marfim',
+  NZL:'Nova Zelândia',CHN:'China',HON:'Honduras',SLV:'El Salvador',GUA:'Guatemala',
+  HAI:'Haiti',JAM:'Jamaica',TRI:'Trinidad e Tobago',DOM:'Rep. Dominicana',NCA:'Nicarágua',
+  FIN:'Finlândia',NOR:'Noruega',SWE:'Suécia',ISL:'Islândia',IRL:'Irlanda',RUS:'Rússia',
+  BIH:'Bósnia',MKD:'Macedônia do Norte',ALB:'Albânia',MNE:'Montenegro',KOS:'Kosovo',
+  GEO:'Geórgia',ARM:'Armênia',AZE:'Azerbaijão',JOR:'Jordânia',UAE:'Emirados Árabes',
+  IRQ:'Iraque',KWT:'Kuwait',OMA:'Omã',BHR:'Bahrein',UZB:'Uzbequistão',KAZ:'Cazaquistão',
+  IND:'Índia',PAK:'Paquistão',THA:'Tailândia',VNM:'Vietnã',IDN:'Indonésia',PHI:'Filipinas',
+  MAL:'Malásia',RSA:'África do Sul',ANG:'Angola',MOZ:'Moçambique',ZIM:'Zimbábue',
+  ZAM:'Zâmbia',UGA:'Uganda',KEN:'Quênia',MLI:'Mali',GUI:'Guiné',GAB:'Gabão',COD:'Congo'
+};
+
+function teamName(team) {
+  if (!team) return '?';
+  var tla = team.tla ? team.tla.toUpperCase() : '';
+  return NOMES_PT[tla] || team.shortName || team.name || tla || '?';
 }
 
 function getMockMatches() {
