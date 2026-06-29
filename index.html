@@ -285,7 +285,7 @@ function initApp() {
 // ============================================================
 function loadMatches() {
   var today = new Date();
-  var from  = new Date(today); from.setDate(from.getDate() - 1);
+  var from  = new Date(today); from.setDate(from.getDate() - 2);
   var to    = new Date(today); to.setDate(to.getDate() + 7);
   var fmt   = function(d) { return d.toISOString().split('T')[0]; };
   var apiUrl = 'https://api.football-data.org/v4/competitions/' + COMP_ID + '/matches?dateFrom=' + fmt(from) + '&dateTo=' + fmt(to);
@@ -419,17 +419,13 @@ function renderMatches() {
   var c = document.getElementById('matchesContainer');
   if (!allMatches.length) { c.innerHTML = '<div class="empty"><div class="emoji">⚽</div>Nenhum jogo encontrado.</div>'; return; }
 
-  // Exibe: jogos não encerrados + jogos de hoje (mesmo encerrados)
-  var hoje = new Date().toDateString();
+  // Mostra apenas jogos não encerrados (agendados, ao vivo, pausados)
   var matchesVisiveis = allMatches.filter(function(m) {
-    var dJogo = new Date(m.utcDate).toDateString();
-    if (m.status !== 'FINISHED') return true;       // ao vivo / agendados sempre
-    if (dJogo === hoje) return true;                 // encerrados de hoje ficam
-    return false;                                    // encerrados de outros dias somem
+    return m.status === 'SCHEDULED' || m.status === 'IN_PLAY' || m.status === 'PAUSED' || m.status === 'TIMED';
   });
 
   if (!matchesVisiveis.length) {
-    c.innerHTML = '<div class="empty"><div class="emoji">⚽</div>Nenhum jogo pendente no momento. Aguarde a próxima rodada!</div>';
+    c.innerHTML = '<div class="empty"><div class="emoji">⚽</div>Sem jogos agendados nos próximos dias.</div>';
     return;
   }
 
