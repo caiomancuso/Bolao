@@ -502,7 +502,7 @@ const SB_URL = 'https://hljvcyxckzgsrzdafpcq.supabase.co';
 const SB_KEY = 'sb_publishable_PQ6dP6z_lsr92QRr9YQo_g_5-e_7j4J';
 const FD_KEY = '021f60308fe04a6fac809b8088397666';
 
-let supabase = null;
+let sbClient = null;
 let fdApiKey = FD_KEY;
 let currentPlayer = '';
 let allMatches = [];
@@ -520,8 +520,8 @@ function initSupabase(url, key) {
 }
 
 async function init() {
-  supabase = initSupabase(SB_URL, SB_KEY);
-  if (!supabase) {
+  sbClient = initSupabase(SB_URL, SB_KEY);
+  if (!sbClient) {
     setSyncStatus(false, 'Erro Supabase — verifique a chave');
     // Ainda carrega jogos mesmo sem Supabase
     await loadMatches();
@@ -603,9 +603,9 @@ async function loadMatches() {
 // SUPABASE: PALPITES
 // ============================================================
 async function loadAllPalpites() {
-  if (!supabase) return;
+  if (!sbClient) return;
   try {
-    const { data, error } = await supabase
+    const { data, error } = await sbClient
       .from('palpites')
       .select('*');
     if (error) {
@@ -625,7 +625,7 @@ async function loadAllPalpites() {
 }
 
 async function savePalpite(matchId, matchLabel, homeGoals, awayGoals, homeTeam, awayTeam, matchDate) {
-  if (!supabase) { showToast('Supabase não configurado.', 'error'); return; }
+  if (!sbClient) { showToast('Supabase não configurado.', 'error'); return; }
   if (!currentPlayer) { showToast('Selecione seu nome primeiro!', 'error'); return; }
   if (homeGoals === '' || awayGoals === '') { showToast('Preencha o placar do palpite.', 'error'); return; }
 
@@ -643,7 +643,7 @@ async function savePalpite(matchId, matchLabel, homeGoals, awayGoals, homeTeam, 
 
   try {
     // Upsert: um palpite por participante por jogo
-    const { error } = await supabase
+    const { error } = await sbClient
       .from('palpites')
       .upsert(record, { onConflict: 'player,match_id' });
     if (error) throw error;
