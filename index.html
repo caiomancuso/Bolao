@@ -285,8 +285,8 @@ function initApp() {
 // ============================================================
 function loadMatches() {
   var today = new Date();
-  var from  = new Date(today); from.setDate(from.getDate() + 0);
-  var to    = new Date(today); to.setDate(to.getDate() + 1);
+  var from  = new Date(today); from.setDate(from.getDate() - 1);
+  var to    = new Date(today); to.setDate(to.getDate() + 2);
   var fmt   = function(d) { return d.toISOString().split('T')[0]; };
   var apiUrl = 'https://api.football-data.org/v4/competitions/' + COMP_ID + '/matches?dateFrom=' + fmt(from) + '&dateTo=' + fmt(to);
 
@@ -425,8 +425,10 @@ function renderAll() {
 }
 
 function updateStats() {
+  function dataBR(d) { return new Date(d.getTime() - 3*60*60*1000).toISOString().split('T')[0]; }
+  var hj = dataBR(new Date());
   var hoje = allMatches.filter(function(m) {
-    return new Date(m.utcDate).toDateString() === new Date().toDateString();
+    return dataBR(new Date(m.utcDate)) === hj;
   }).length;
   document.getElementById('statHoje').textContent = hoje;
 }
@@ -436,16 +438,23 @@ function renderMatches() {
   if (!allMatches.length) { c.innerHTML = '<div class="empty"><div class="emoji">⚽</div>Nenhum jogo encontrado.</div>'; return; }
 
   // Mostra apenas jogos não encerrados (agendados, ao vivo, pausados)
-  var agora   = new Date();
-  var hojeStr = agora.toISOString().split('T')[0];
-  var amanha  = new Date(agora); amanha.setDate(amanha.getDate() + 1);
-  var amanhaStr = amanha.toISOString().split('T')[0];
+  // Usar horário de Brasília (UTC-3) para comparar datas
+  function dataBrasilia(d) {
+    var utc = d.getTime();
+    var br  = new Date(utc - 3 * 60 * 60 * 1000); // UTC-3
+    return br.toISOString().split('T')[0];
+  }
+
+  var agora     = new Date();
+  var hojeStr   = dataBrasilia(agora);
+  var amanha    = new Date(agora); amanha.setDate(amanha.getDate() + 1);
+  var amanhaStr = dataBrasilia(amanha);
 
   var matchesVisiveis = allMatches.filter(function(m) {
-    var dJogo = m.utcDate.split('T')[0];
-    var ehHojeOuAmanha = dJogo === hojeStr || dJogo === amanhaStr;
+    var dJogo   = dataBrasilia(new Date(m.utcDate));
+    var ehAlvo  = dJogo === hojeStr || dJogo === amanhaStr;
     var pendente = m.status === 'SCHEDULED' || m.status === 'IN_PLAY' || m.status === 'PAUSED' || m.status === 'TIMED';
-    return ehHojeOuAmanha && pendente;
+    return ehAlvo && pendente;
   });
 
   if (!matchesVisiveis.length) {
@@ -518,7 +527,12 @@ function buildMatchCard(m) {
     palpiteHtml = '<div class="palpite-section">' + existHtml + '<label>Seu palpite</label><div class="palpite-grid"><input class="palpite-score-in" type="number" min="0" max="20" id="h-' + m.id + '" value="' + vH + '" placeholder="0"><div class="palpite-sep">×</div><input class="palpite-score-in" type="number" min="0" max="20" id="a-' + m.id + '" value="' + vA + '" placeholder="0"></div><button class="btn-submit btn-palpite" data-mid="' + m.id + '">' + btnLabel + '</button></div>';
   }
 
-  var round = (m.stage || 'GROUP_STAGE').replace('GROUP_STAGE','Fase de Grupos').replace('ROUND_OF_16','Oitavas de Final').replace('QUARTER_FINALS','Quartas de Final').replace('SEMI_FINALS','Semifinal').replace('FINAL','Final').replace(/_/g,' ');
+  var stageMap = {
+    'GROUP_STAGE':'Fase de Grupos', 'LAST_32':'Oitavas de Final',
+    'ROUND_OF_16':'Quartas de Final', 'QUARTER_FINALS':'Semifinais',
+    'SEMI_FINALS':'Semifinal', 'THIRD_PLACE':'3º Lugar', 'FINAL':'Final'
+  };
+  var round = stageMap[m.stage] || (m.stage || '').replace(/_/g,' ') || 'Copa 2026';
   var group = m.group ? ' · ' + m.group.replace('Group ','Grupo ') : '';
 
 
@@ -683,11 +697,28 @@ var NOMES_PT = {
 
 function teamName(team) {
   if (!team) return '?';
-  var tla = team.tla ? team.tla.toUpperCase() : '';
+  // Tenta TLA (3 letras) direto
+  var tla = (team.tla || '').toUpperCase().trim();
   if (tla && NOMES_PT[tla]) return NOMES_PT[tla];
-  // Limpar TLA embutido no nome que a API retorna (ex: "Brasil BR" → "Brasil")
-  var raw = team.shortName || team.name || tla || '?';
-  raw = raw.replace(/\s+[A-Z]{2,3}$/, '').replace(/^[A-Z]{2,3}\s+/, '').trim();
+  // Tenta converter ISO-2 → TLA
+  var iso2map = { 'BR':'BRA','AR':'ARG','DE':'GER','FR':'FRA','ES':'ESP','PT':'POR',
+    'IT':'ITA','UY':'URU','CO':'COL','MX':'MEX','US':'USA','CA':'CAN','JP':'JPN',
+    'KR':'KOR','AU':'AUS','NL':'NED','BE':'BEL','HR':'CRO','SN':'SEN','MA':'MAR',
+    'GH':'GHA','NG':'NGA','EC':'ECU','CH':'SUI','PL':'POL','DK':'DEN','RS':'SRB',
+    'HU':'HUN','RO':'ROU','UA':'UKR','TR':'TUR','GR':'GRE','PA':'PAN','VE':'VEN',
+    'PE':'PER','CL':'CHI','BO':'BOL','PY':'PAR','IR':'IRI','SA':'SAU','QA':'QAT',
+    'EG':'EGY','DZ':'ALG','TN':'TUN','CM':'CMR','NZ':'NZL','CN':'CHN','CI':'CIV',
+    'CR':'CRC','HN':'HON','SV':'SLV','GT':'GUA','JM':'JAM','TT':'TRI' };
+  if (iso2map[tla] && NOMES_PT[iso2map[tla]]) return NOMES_PT[iso2map[tla]];
+  // Limpar código do nome bruto (ex: "Brasil BR" → "Brasil", "JP Japão" → "Japão")
+  var raw = (team.shortName || team.name || '').trim();
+  // Remove código no início ou fim (2-3 letras maiúsculas isoladas)
+  raw = raw.replace(/^[A-Z]{2,3}\s+/, '').replace(/\s+[A-Z]{2,3}$/, '').trim();
+  // Tenta esse nome limpo no NOMES_PT também
+  var match = Object.values(NOMES_PT).find(function(n) {
+    return n.toLowerCase() === raw.toLowerCase();
+  });
+  if (match) return match;
   return raw || tla || '?';
 }
 
